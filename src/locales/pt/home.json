@@ -1,0 +1,26 @@
+{
+    "title": "Explore o mundo na ponta dos seus dedos",
+    "description": "Descubra países clicando em uma bandeira ou pesquise por um nome.",
+    "adventure": "Sua próxima aventura está a apenas um clique ou pesquisa de distância!",
+    "allRegions": "Todas as Regiões",
+    "regions": {
+      "africa": "Africa",
+      "americas": "Americas",
+      "asia": "Asia",
+      "europe": "Europe",
+      "oceania": "Oceania",
+      "antarctic": "Antarctic"
+    },
+    "maxPopulation": "População Máxima",
+    "domainPlaceholder": "Domínio (ex: .br)",
+    "showing": "Mostrando",
+    "of": "de",
+    "countries": "países",
+    "filteredByRegion": "Filtrado por região:",
+    "filteredByPopulation": "Filtrado por população:",
+    "filteredByDomain": "Filtrado por domínio:",
+    "loadingCountries": "Carregando países...",
+    "noCountryFound": "Nenhum país encontrado com esse nome.",
+    "searchPlaceholder": "Digite o nome de um país...",
+    "goBack": "Voltar ao início"
+  }

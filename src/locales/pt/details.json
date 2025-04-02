@@ -1,0 +1,23 @@
+{
+    "back": "Voltar",
+    "population": "População",
+    "area": "Área",
+    "capital": "Capital",
+    "coatOfArms": "Brasão de Armas",
+    "populationDensity": "Densidade Populacional",
+    "landArea": "Área Territorial",
+    "gdpPerCapita": "PIB per Capita",
+    "countryInformation": "Informações do País",
+    "continent": "Continente",
+    "timeZones": "Fusos Horários",
+    "languages": "Idiomas",
+    "currencies": "Moedas",
+    "callingCode": "Código de Discagem",
+    "domain": "Domínio",
+    "drivingSide": "Lado de Direção",
+    "region": "Região",
+    "latitudeLongitude": "Latitude / Longitude",
+    "startOfWeek": "Início da Semana",
+    "nativeName": "Nome Nativo",
+    "demonym": "Gentílico"
+  }

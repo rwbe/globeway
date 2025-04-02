@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.non-selectable {
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+  

@@ -1,0 +1,20 @@
+{
+  "title": "💬 Leave Your Feedback",
+  "description": "At <strong>GlobeWay</strong>, we believe the best way to improve is by listening to you! 🎯 Your feedback is essential for us to continue improving and making the platform even more intuitive and complete.",
+  "shareOpinion": "We want to know your opinion! You can share:",
+  "shareList": [
+    "🌟 What you liked most about <strong>GlobeWay</strong>.",
+    "🚀 Suggestions for new features or improvements.",
+    "🐞 Bugs or technical issues you encountered.",
+    "💡 Any other ideas that can make <strong>GlobeWay</strong> even better!"
+  ],
+  "teamMessage": "Our team carefully analyzes each feedback, and we always strive to implement the best suggestions to provide the best possible experience.",
+  "shareYourOpinion": "Share your opinion",
+  "shareYourOpinionDescription": "Leave your suggestion, criticism, or praise in the field below. Your voice makes all the difference!",
+  "thankYouMessage": "✅ Thank you for your feedback! We are always working to improve <strong>GlobeWay</strong>. 🚀",
+  "placeholder": "Type your message here...",
+  "sendFeedback": "Send Feedback",
+  "finalMessage": "✨ Your participation helps us make <strong>GlobeWay</strong> the best country exploration platform! Thank you for being part of this journey. 🌍💙",
+  "connectWithUs": "📱 Connect with Us",
+  "connectWithUsDescription": "Have any questions or suggestions? Reach out to us via GitHub or email, and we’ll get back to you as soon as possible!"
+}

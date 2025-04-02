@@ -1,0 +1,23 @@
+{
+    "back": "Back",
+    "population": "Population",
+    "area": "Area",
+    "capital": "Capital",
+    "coatOfArms": "Coat of Arms",
+    "populationDensity": "Population Density",
+    "landArea": "Land Area",
+    "gdpPerCapita": "GDP per Capita",
+    "countryInformation": "Country Information",
+    "continent": "Continent",
+    "timeZones": "Time Zones",
+    "languages": "Languages",
+    "currencies": "Currencies",
+    "callingCode": "Calling Code",
+    "domain": "Domain",
+    "drivingSide": "Driving Side",
+    "region": "Region",
+    "latitudeLongitude": "Latitude / Longitude",
+    "startOfWeek": "Start of Week",
+    "nativeName": "Native Name",
+    "demonym": "Demonym"
+  }

@@ -1,0 +1,26 @@
+{
+    "title": "Explore the world at your fingertips",
+    "description": "Discover countries by clicking on a flag or search for one by name.",
+    "adventure": "Your next adventure is just a click or search away!",
+    "allRegions": "All Regions",
+    "regions": {
+      "africa": "Africa",
+      "americas": "Americas",
+      "asia": "Asia",
+      "europe": "Europe",
+      "oceania": "Oceania",
+      "antarctic": "Antarctic"
+    },
+    "maxPopulation": "Max Population",
+    "domainPlaceholder": "Domain (e.g: .br)",
+    "showing": "Showing",
+    "of": "of",
+    "countries": "countries",
+    "filteredByRegion": "Filtered by region:",
+    "filteredByPopulation": "Filtered by population:",
+    "filteredByDomain": "Filtered by domain:",
+    "loadingCountries": "Loading countries...",
+    "noCountryFound": "No country found with this name.",
+    "searchPlaceholder": "Type the name of a country...",
+    "goBack": "Go back to start"
+  }
