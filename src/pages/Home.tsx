@@ -1,3 +1,4 @@
+// Home.tsx
 import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
@@ -30,8 +31,8 @@ function Home({ isDarkMode }: HomeProps) {
   const { data: countries, isLoading: isLoadingCountries } = useQuery(
     'allCountries',
     async () => {
-      const response = await axios.get('https://restcountries.com/v3.1/all');
-      return response.data as Country[];
+      const response = await axios.get<Country[]>('https://restcountries.com/v3.1/all?fields=name,cca2,flags,capital,region,population');
+      return response.data;
     }
   );
 
@@ -43,8 +44,8 @@ function Home({ isDarkMode }: HomeProps) {
     }
 
     try {
-      const response = await axios.get(`https://restcountries.com/v3.1/name/${query}`);
-      const names = response.data.map((c: Country) => c.name.common).slice(0, 10);
+      const response = await axios.get<Country[]>(`https://restcountries.com/v3.1/name/${encodeURIComponent(query)}?fields=name`);
+      const names = response.data.map((c) => c.name.common).slice(0, 10);
       setSuggestions(names);
     } catch (error) {
       console.error('Erro ao buscar sugestões:', error);
@@ -58,15 +59,18 @@ function Home({ isDarkMode }: HomeProps) {
     async () => {
       if (!searchQuery) return null;
       try {
-        const response = await axios.get(`https://restcountries.com/v3.1/name/${searchQuery}`);
+        const response = await axios.get<Country[]>(`https://restcountries.com/v3.1/name/${encodeURIComponent(searchQuery)}?fields=name,cca2,flags,capital,region,subregion,population,area,languages,currencies,tld`);
         setErrorMessage("");
-        return response.data[0] as Country;
+        return response.data.length > 0 ? response.data[0] : null;
       } catch (error) {
         setErrorMessage(t('noCountryFound'));
         return null;
       }
     },
-    { enabled: !!searchQuery, retry: false }
+    {
+      enabled: !!searchQuery,
+      retry: false
+    }
   );
 
   // Função para retornar ao estado inicial
@@ -80,8 +84,8 @@ function Home({ isDarkMode }: HomeProps) {
   const filteredCountries = countries?.filter((c) => {
     return (
       (!regionFilter || c.region === regionFilter) &&
-      (!populationFilter || c.population <= populationFilter) &&
-      (!tldFilter || c.tld?.includes(tldFilter))
+      (!populationFilter || (c.population && c.population <= populationFilter)) &&
+      (!tldFilter || (c.tld?.includes(tldFilter)))
     );
   });
 
@@ -106,29 +110,23 @@ function Home({ isDarkMode }: HomeProps) {
       <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* Exibição inicial quando não há pesquisa ou país selecionado */}
         {!searchQuery && !selectedCountry && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-8"
-            >
-               <img
-                 src="/earth.png"
-                 alt="Earth"
-                 className={`w-16 h-16 ${isDarkMode ? 'filter brightness' : 'filter brightness-90'} mx-auto mb-4`}
-                 style={{ pointerEvents: "none" }} // Impede interação com a imagem
-             />
-              <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-neutral-300' : 'text-gray-800'} non-selectable`}>
-                {t('title')}
-              </h2>
-              <p className={`mt-2 text-lg ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'} non-selectable`}>
-                {t('description')}
-              </p>
-              <p className={`mt-4 text-sm italic ${isDarkMode ? 'text-neutral-500' : 'text-gray-400'} non-selectable`}>
-                {t('adventure')}
-              </p>
-            </motion.div>
-          </>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
+           <img
+             src="/earth.png"
+             alt="Earth"
+             className={`w-16 h-16 ${isDarkMode ? 'filter brightness' : 'filter brightness-90'} mx-auto mb-4`}
+             style={{ pointerEvents: "none" }}
+           />
+            <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-neutral-300' : 'text-gray-800'} non-selectable`}>
+              {t('title')}
+            </h2>
+            <p className={`mt-2 text-lg ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'} non-selectable`}>
+              {t('description')}
+            </p>
+            <p className={`mt-4 text-sm italic ${isDarkMode ? 'text-neutral-500' : 'text-gray-400'} non-selectable`}>
+              {t('adventure')}
+            </p>
+          </motion.div>
         )}
 
         {/* Barra de Pesquisa */}
@@ -138,17 +136,6 @@ function Home({ isDarkMode }: HomeProps) {
           isLoading={isLoadingSearch}
           isDarkMode={isDarkMode}
         />
-
-        {/* Divider super discreto, com transparência - Apenas na página inicial */}
-        {!searchQuery && !selectedCountry && (
-          <div className="flex justify-center items-center w-full">
-            <div className="w-1/2 flex items-center justify-center gap-3">
-              <div className="h-[2px] w-1/2 bg-gray-400/40 dark:bg-neutral-400/40 rounded-full" />
-              <div className="w-2 h-2 bg-gray-400/50 dark:bg-neutral-400/50 rounded-full" />
-              <div className="h-[2px] w-1/2 bg-gray-400/40 dark:bg-neutral-400/40 rounded-full" />
-            </div>
-          </div>
-        )}
 
         {/* Filtros de Pesquisa */}
         {!searchQuery && !selectedCountry && (
@@ -207,20 +194,20 @@ function Home({ isDarkMode }: HomeProps) {
 
         {/* Exibição de Países */}
         {!searchQuery && !selectedCountry && (
-           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
             {isLoadingCountries ? (
               <p className="text-center text-neutral-500">{t('loadingCountries')}</p>
             ) : (
               sortedCountries?.map((c) => (
                 <Tooltip
-                  key={c.cca3}
+                  key={c.cca2}
                   content={
                     <div className="space-y-1">
                       <p><strong>{t("translationsTooltip:countryDetails.capital")}:</strong> {c.capital?.[0] || t("translationsTooltip:countryDetails.notAvailable")}</p>
                       <p><strong>{t("translationsTooltip:countryDetails.region")}:</strong> {t(`translationsTooltip:regions.${c.region.toLowerCase()}`)}</p>
                       <p><strong>{t("translationsTooltip:countryDetails.subregion")}:</strong> {c.subregion || t("translationsTooltip:countryDetails.notAvailable")}</p>
-                      <p><strong>{t("translationsTooltip:countryDetails.population")}:</strong> {c.population.toLocaleString()}</p>
-                      <p><strong>{t("translationsTooltip:countryDetails.area")}:</strong> {c.area.toLocaleString()} km²</p>
+                      <p><strong>{t("translationsTooltip:countryDetails.population")}:</strong> {c.population?.toLocaleString()}</p>
+                      <p><strong>{t("translationsTooltip:countryDetails.area")}:</strong> {c.area?.toLocaleString()} km²</p>
                       <p><strong>{t("translationsTooltip:countryDetails.languages")}:</strong> {c.languages ? Object.values(c.languages).join(", ") : t("translationsTooltip:countryDetails.notAvailable")}</p>
                       <p><strong>{t("translationsTooltip:countryDetails.currencies")}:</strong> {c.currencies ? Object.values(c.currencies).map((curr) => curr.name).join(", ") : t("translationsTooltip:countryDetails.notAvailable")}</p>
                     </div>
@@ -228,9 +215,7 @@ function Home({ isDarkMode }: HomeProps) {
                   position="top"
                 >
                   <motion.div
-                    className={`p-6 border rounded-xl cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 ease-in-out ${
-                      isDarkMode ? "bg-neutral-800" : "bg-white"
-                    }`}
+                    className={`p-6 border rounded-xl cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 ease-in-out ${isDarkMode ? "bg-neutral-800" : "bg-white"}`}
                     whileHover={{ scale: 1.03 }}
                     onClick={() => setSelectedCountry(c)}
                   >
@@ -240,10 +225,10 @@ function Home({ isDarkMode }: HomeProps) {
                       className="w-full h-48 object-cover rounded-lg opacity-90 hover:opacity-100 transition-opacity duration-300" 
                     />
                     <h3 className={`mt-4 text-xl font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-                      {getTranslatedName(c.cca3, 'common') || c.name.common} {/* Nome traduzido ou original */}
+                      {getTranslatedName(c.cca2, 'common') || c.name.common} 
                     </h3>
                     <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'}`}>
-                      {t(`translationsTooltip:regions.${c.region.toLowerCase()}`)} {/* Tradução da região */}
+                      {t(`translationsTooltip:regions.${c.region.toLowerCase()}`)}
                     </p>
                   </motion.div>
                 </Tooltip>
@@ -263,11 +248,7 @@ function Home({ isDarkMode }: HomeProps) {
 
         {/* Mensagem de Erro */}
         {errorMessage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-12"
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
             <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-neutral-300' : 'text-gray-800'}`}>
               {errorMessage}
             </h2>
