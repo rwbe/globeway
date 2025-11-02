@@ -27,24 +27,63 @@ function Home({ isDarkMode }: HomeProps) {
   const [tldFilter, setTldFilter] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Query para obter todos os países
-  const { data: countries, isLoading: isLoadingCountries } = useQuery(
+  // Scroll para o topo quando selecionar um país - NOVO
+  useEffect(() => {
+    if (selectedCountry) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }, [selectedCountry]);
+
+  // Query para obter todos os países - MELHORADO
+  const { data: countries, isLoading: isLoadingCountries, isError: isCountriesError, error: countriesError } = useQuery(
     'allCountries',
     async () => {
-      const response = await axios.get<Country[]>('https://restcountries.com/v3.1/all?fields=name,cca2,flags,capital,region,population');
+      const response = await axios.get<Country[]>(
+        'https://restcountries.com/v3.1/all?fields=name,cca2,flags,capital,region,population,languages,currencies,area,timezones',
+        {
+          timeout: 15000, // NOVO: timeout de 15 segundos
+          headers: { 'Accept': 'application/json' }
+        }
+      );
       return response.data;
+    },
+    {
+      retry: 2, // NOVO: tenta 2 vezes antes de falhar
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000), // NOVO: delay exponencial
+      staleTime: 10 * 60 * 1000, // NOVO: 10 minutos
+      cacheTime: 30 * 60 * 1000, // NOVO: 30 minutos
+      refetchOnWindowFocus: false, // NOVO: não recarregar ao focar na janela
     }
   );
 
-  // Função para buscar sugestões de países
+  // Função para buscar sugestões de países - MELHORADA com fallback local
   const handleSearch = async (query: string) => {
-    if (!query.trim()) {
+    if (!query.trim() || query.length < 2) { // NOVO: mínimo 2 caracteres
       setSuggestions([]);
       return;
     }
 
     try {
-      const response = await axios.get<Country[]>(`https://restcountries.com/v3.1/name/${encodeURIComponent(query)}?fields=name`);
+      // NOVO: Usar dados locais para sugestões quando possível
+      if (countries && countries.length > 0) {
+        const localSuggestions = countries
+          .filter(c => c.name?.common?.toLowerCase().includes(query.toLowerCase()))
+          .map(c => c.name.common)
+          .slice(0, 10);
+        
+        if (localSuggestions.length > 0) {
+          setSuggestions(localSuggestions);
+          return;
+        }
+      }
+
+      // Fallback para API apenas se necessário
+      const response = await axios.get<Country[]>(
+        `https://restcountries.com/v3.1/name/${encodeURIComponent(query)}?fields=name`,
+        { timeout: 5000 } // NOVO: timeout de 5 segundos
+      );
       const names = response.data.map((c) => c.name.common).slice(0, 10);
       setSuggestions(names);
     } catch (error) {
@@ -53,25 +92,71 @@ function Home({ isDarkMode }: HomeProps) {
     }
   };
 
-  // Query para buscar um país específico
+  // Query para buscar um país específico - MELHORADA
   const { data: country, isLoading: isLoadingSearch } = useQuery(
     ["country", searchQuery],
     async () => {
       if (!searchQuery) return null;
       try {
-        const response = await axios.get<Country[]>(`https://restcountries.com/v3.1/name/${encodeURIComponent(searchQuery)}?fields=name,cca2,flags,capital,region,subregion,population,area,languages,currencies,tld`);
-        setErrorMessage("");
-        return response.data.length > 0 ? response.data[0] : null;
+        // NOVO: Tentar múltiplos endpoints
+        const searchUrls = [
+          `https://restcountries.com/v3.1/name/${searchQuery}`,
+          `https://restcountries.com/v2/name/${searchQuery}`
+        ];
+        
+        for (const url of searchUrls) {
+          try {
+            const response = await axios.get<Country[]>(url, {
+              timeout: 10000, // NOVO: timeout de 10 segundos
+              headers: { 'Accept': 'application/json' }
+            });
+            setErrorMessage("");
+            return response.data.length > 0 ? response.data[0] : null;
+          } catch (error) {
+            console.warn(`Busca falhou com ${url}:`, error);
+            continue;
+          }
+        }
+        
+        throw new Error('Todos os endpoints de busca falharam');
       } catch (error) {
+        console.error('Search error:', error);
         setErrorMessage(t('noCountryFound'));
         return null;
       }
     },
     {
-      enabled: !!searchQuery,
-      retry: false
+      enabled: !!searchQuery && searchQuery.length > 2, // NOVO: mínimo 2 caracteres
+      retry: 1, // NOVO: tenta apenas 1 vez
+      retryDelay: 2000, // NOVO: delay de 2 segundos
+      staleTime: 5 * 60 * 1000, // NOVO: 5 minutos
+      refetchOnWindowFocus: false // NOVO: não recarregar ao focar
     }
   );
+
+  // NOVA FUNÇÃO: Buscar dados completos ao clicar no card
+  const handleCountryClick = async (country: Country) => {
+    try {
+      // Buscar dados completos do país usando o nome
+      const response = await axios.get<Country[]>(
+        `https://restcountries.com/v3.1/name/${country.name.common}?fullText=true`,
+        {
+          timeout: 10000,
+          headers: { 'Accept': 'application/json' }
+        }
+      );
+      
+      if (response.data && response.data.length > 0) {
+        setSelectedCountry(response.data[0]);
+      } else {
+        // Se falhar, usa os dados que já temos
+        setSelectedCountry(country);
+      }
+    } catch (error) {
+      console.warn('Erro ao buscar dados completos, usando dados disponíveis:', error);
+      setSelectedCountry(country);
+    }
+  };
 
   // Função para retornar ao estado inicial
   const handleGoBack = () => {
@@ -96,14 +181,14 @@ function Home({ isDarkMode }: HomeProps) {
   const filteredCount = filteredCountries?.length || 0;
   const totalCountries = countries?.length || 0;
 
-  // Atualiza as sugestões de pesquisa com debounce
+  // Atualiza as sugestões de pesquisa com debounce MELHORADO
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       handleSearch(searchQuery);
-    }, 500);
+    }, 1000); // AUMENTADO: 500ms → 1000ms
 
     return () => clearTimeout(debounceTimeout);
-  }, [searchQuery]);
+  }, [searchQuery, countries]); // NOVO: adicionado countries como dependência
 
   return (
     <div className={`min-h-screen transition-colors duration-200 ${isDarkMode ? "bg-neutral-900" : "bg-gray-50"} non-selectable`}>
@@ -192,11 +277,21 @@ function Home({ isDarkMode }: HomeProps) {
           </div>
         )}
 
-        {/* Exibição de Países */}
+        {/* Exibição de Países - ATUALIZADO com nova função de clique */}
         {!searchQuery && !selectedCountry && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
             {isLoadingCountries ? (
               <p className="text-center text-neutral-500">{t('loadingCountries')}</p>
+            ) : isCountriesError ? ( // NOVO: tratamento de erro
+              <div className="col-span-full text-center py-8">
+                <p className="text-red-500 mb-4">Erro ao carregar países</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-500 text-white rounded"
+                >
+                  Tentar novamente
+                </button>
+              </div>
             ) : (
               sortedCountries?.map((c) => (
                 <Tooltip
@@ -217,7 +312,7 @@ function Home({ isDarkMode }: HomeProps) {
                   <motion.div
                     className={`p-6 border rounded-xl cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 ease-in-out ${isDarkMode ? "bg-neutral-800" : "bg-white"}`}
                     whileHover={{ scale: 1.03 }}
-                    onClick={() => setSelectedCountry(c)}
+                    onClick={() => handleCountryClick(c)} // ATUALIZADO: nova função
                   >
                     <img 
                       src={c.flags.svg} 
