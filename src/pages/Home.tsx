@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import Tooltip from '../components/Tooltip';
 import { useTranslatedCountryNames } from '../utils/translateCountryNames'; 
 import { useBulkEconomicData } from '../hooks/useEnhancedCountryData';
-import { FaGlobe } from 'react-icons/fa'; 
+import { FaGlobe, FaUsers, FaMapMarkerAlt, FaExclamationTriangle } from 'react-icons/fa'; // NOVOS ÍCONES
 
 interface HomeProps {
   isDarkMode: boolean;
@@ -361,24 +361,21 @@ function Home({ isDarkMode }: HomeProps) {
   }, [searchQuery, countries]);
 
   return (
-    // NOVO: Design system moderno com classes semânticas
     <div className="min-h-screen non-selectable">
-      <main className="max-w-7xl mx-auto px-6 py-12 space-y-16"> {/* NOVO: Padding aumentado e espaçamento */}
+      <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
         
-        {/* NOVA HERO SECTION MODERNA */}
+        {/* HERO SECTION MODERNA */}
         {!searchQuery && !selectedCountry && (
           <>
-            <div className="relative overflow-hidden rounded-3xl"> {/* NOVO: Container com bordas arredondadas */}
+            <div className="relative overflow-hidden rounded-3xl">
               {/* Background com Gradiente e Elementos Gráficos Modernos */}
               <div className="absolute inset-0 -z-10">
-                {/* Gradiente de fundo dinâmico */}
                 <div className={`absolute inset-0 ${
                   isDarkMode 
                     ? 'bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950' 
                     : 'bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30'
                 }`} />
                 
-                {/* Mapa pontilhado abstrato - fundo principal moderno */}
                 <motion.div
                   initial={{ opacity: 0, scale: 1.1 }}
                   animate={{ 
@@ -405,7 +402,6 @@ function Home({ isDarkMode }: HomeProps) {
                   }}
                 />
                 
-                {/* Efeitos de luz sutis e modernos */}
                 <motion.div 
                   animate={{ 
                     scale: [1, 1.2, 1],
@@ -445,14 +441,13 @@ function Home({ isDarkMode }: HomeProps) {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="relative text-center pt-32 pb-24 px-4" // NOVO: Padding vertical aumentado
+                className="relative text-center pt-32 pb-24 px-4"
               >
-                {/* Badge superior moderno */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
-                  className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border backdrop-blur-sm glass" // NOVO: Efeito glass
+                  className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border backdrop-blur-sm glass"
                   style={{
                     borderColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
                     background: isDarkMode 
@@ -460,7 +455,7 @@ function Home({ isDarkMode }: HomeProps) {
                       : 'linear-gradient(135deg, rgba(14,165,233,0.05), rgba(90,109,141,0.05))'
                   }}
                 >
-                  <FaGlobe className={`w-4 h-4 ${isDarkMode ? 'text-accent-400' : 'text-accent-600'}`} /> {/* NOVO: Ícone moderno */}
+                  <FaGlobe className={`w-4 h-4 ${isDarkMode ? 'text-accent-400' : 'text-accent-600'}`} />
                   <span className={`text-sm font-semibold ${
                     isDarkMode ? 'text-neutral-300' : 'text-neutral-700'
                   }`}>
@@ -468,7 +463,6 @@ function Home({ isDarkMode }: HomeProps) {
                   </span>
                 </motion.div>
 
-                {/* Título Principal com Tipografia Moderna */}
                 <motion.h1
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -480,7 +474,6 @@ function Home({ isDarkMode }: HomeProps) {
                   {t('title')}
                 </motion.h1>
 
-                {/* Subtítulo Elegante */}
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -492,7 +485,6 @@ function Home({ isDarkMode }: HomeProps) {
                   {t('description')}
                 </motion.p>
 
-                {/* Barra de Pesquisa na Hero Section */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -511,7 +503,7 @@ function Home({ isDarkMode }: HomeProps) {
           </>
         )}
 
-        {/* Filtros Modernos - ATUALIZADO com design system */}
+        {/* FILTROS MODERNOS */}
         {!searchQuery && !selectedCountry && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -519,9 +511,7 @@ function Home({ isDarkMode }: HomeProps) {
             transition={{ delay: 0.4, duration: 0.5 }}
             className="space-y-4"
           >
-            {/* Primary filters row */}
             <div className="flex flex-wrap gap-4 justify-center">
-              {/* Region filter */}
               <div className="relative">
                 <select
                   value={regionFilter}
@@ -547,7 +537,6 @@ function Home({ isDarkMode }: HomeProps) {
                 </div>
               </div>
 
-              {/* Population size filter */}
               <div className="relative">
                 <select
                   value={populationSizeFilter}
@@ -570,7 +559,6 @@ function Home({ isDarkMode }: HomeProps) {
                 </div>
               </div>
 
-              {/* Language filter */}
               <input
                 type="text"
                 placeholder={t('languagePlaceholder') || "Filtrar por idioma..."}
@@ -584,9 +572,7 @@ function Home({ isDarkMode }: HomeProps) {
               />
             </div>
 
-            {/* Secondary filters row */}
             <div className="flex flex-wrap gap-4 justify-center">
-              {/* Population filter */}
               <input
                 type="number"
                 placeholder={t('maxPopulation')}
@@ -598,7 +584,6 @@ function Home({ isDarkMode }: HomeProps) {
                 onChange={(e) => setPopulationFilter(Number(e.target.value))}
               />
 
-              {/* Domain filter */}
               <input
                 type="text"
                 placeholder={t('domainPlaceholder')}
@@ -611,7 +596,6 @@ function Home({ isDarkMode }: HomeProps) {
                 onChange={(e) => setTldFilter(e.target.value)}
               />
 
-              {/* Clear filters button */}
               {hasActiveFilters && (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -630,7 +614,7 @@ function Home({ isDarkMode }: HomeProps) {
           </motion.div>
         )}
 
-        {/* Status Display Moderno */}
+        {/* STATUS DISPLAY MODERNO */}
         {!searchQuery && !selectedCountry && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -705,114 +689,194 @@ function Home({ isDarkMode }: HomeProps) {
           </motion.div>
         )}
 
-        {/* Exibição de Países */}
+        {/* NOVO: GRID DE PAÍSES MODERNO */}
         {!searchQuery && !selectedCountry && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+          >
             {isLoadingCountries ? (
-              <div className="col-span-full flex justify-center items-center py-8">
-                <div className="text-center">
-                  <div className={`w-8 h-8 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-2 ${
-                    isDarkMode ? 'border-blue-800 border-t-blue-400' : ''
+              // NOVO: Loading State Aprimorado
+              <div className="col-span-full flex justify-center items-center py-24">
+                <div className="text-center space-y-4">
+                  <div className={`w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto ${
+                    isDarkMode ? 'border-primary-800 border-t-primary-400' : ''
                   }`}></div>
-                  <p className="text-neutral-500">{t('loadingCountries')}</p>
+                  <p className={`text-lg font-medium ${
+                    isDarkMode ? 'text-neutral-300' : 'text-neutral-600'
+                  }`}>
+                    {t('loadingCountries')}
+                  </p>
+                  <p className={`text-sm ${
+                    isDarkMode ? 'text-neutral-500' : 'text-neutral-400'
+                  }`}>
+                    Carregando dados de múltiplas fontes...
+                  </p>
                 </div>
               </div>
             ) : isCountriesError ? (
-              <div className="col-span-full text-center py-8">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 ${
-                  isDarkMode ? 'bg-red-900/50 text-red-300' : 'bg-red-50 text-red-600'
-                }`}>
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              // NOVO: Error State Aprimorado
+              <div className="col-span-full flex justify-center items-center py-24">
+                <div className="text-center space-y-4">
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                    isDarkMode ? 'bg-red-900/50 text-red-300' : 'bg-red-50 text-red-600'
+                  }`}>
+                    <FaExclamationTriangle className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <p className={`text-lg font-medium mb-2 ${
+                      isDarkMode ? 'text-neutral-300' : 'text-neutral-600'
+                    }`}>
+                      Erro ao carregar países
+                    </p>
+                    <p className={`text-sm ${
+                      isDarkMode ? 'text-neutral-400' : 'text-neutral-500'
+                    }`}>
+                      {(countriesError as Error)?.message || 'Verifique sua conexão e tente novamente'}
+                    </p>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => window.location.reload()}
+                      className={`mt-4 px-6 py-3 rounded-xl font-medium transition-colors ${
+                        isDarkMode 
+                          ? 'bg-neutral-700 hover:bg-neutral-600 text-white' 
+                          : 'bg-neutral-200 hover:bg-neutral-300 text-neutral-700'
+                      }`}
+                    >
+                      Tentar novamente
+                    </motion.button>
+                  </div>
                 </div>
-                <p className={`text-lg font-medium mb-2 ${isDarkMode ? 'text-neutral-300' : 'text-gray-700'}`}>
-                  Erro ao carregar países
-                </p>
-                <p className={`text-sm mb-4 ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
-                  {(countriesError as Error)?.message || 'Verifique sua conexão e tente novamente'}
-                </p>
-                <button
-                  onClick={() => window.location.reload()}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isDarkMode 
-                      ? 'bg-neutral-700 hover:bg-neutral-600 text-white' 
-                      : 'bg-neutral-200 hover:bg-neutral-300 text-neutral-700'
-                  }`}
-                >
-                  Tentar novamente
-                </button>
               </div>
             ) : (
-              sortedCountries?.map((c) => (
-                <Tooltip
-                  key={c.cca3 || c.cca2}
-                  content={
-                    <div className="space-y-2 p-2">
-                      <p className="font-semibold text-sm">{c.capital?.[0] || t("translationsTooltip:countryDetails.notAvailable")}</p>
-                      <div className="space-y-1 text-xs">
-                        <p><span className="font-medium">{t("translationsTooltip:countryDetails.region")}:</span> {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : t("translationsTooltip:countryDetails.notAvailable")}</p>
-                        <p><span className="font-medium">{t("translationsTooltip:countryDetails.population")}:</span> {(c.population ?? 0).toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")}</p>
-                        <p><span className="font-medium">{t("translationsTooltip:countryDetails.area")}:</span> {c.area?.toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")} km²</p>
-                        {c.languages && (
-                          <p><span className="font-medium">{t("translationsTooltip:countryDetails.languages")}:</span> {Object.values(c.languages).slice(0, 3).join(", ")}</p>
-                        )}
-                      </div>
-                    </div>
-                  }
-                  position="top"
+              // NOVO: Cards de Países Modernizados
+              sortedCountries?.map((c, index) => (
+                <motion.div
+                  key={c.cca3}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1 + index * 0.05, duration: 0.5 }}
+                  className="h-full"
                 >
-                  <motion.div
-                    className={`p-6 border-2 rounded-xl cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 ease-in-out ${
-                      isDarkMode 
-                        ? "bg-neutral-800 border-neutral-700 hover:border-neutral-600" 
-                        : "bg-white border-gray-200 hover:border-gray-300"
-                    }`}
-                    whileHover={{ scale: 1.03, y: -2 }}
-                    onClick={() => handleCountryClick(c)}
-                  >
-                    <img 
-                      src={c.flags?.svg || c.flags?.png || '/earth.png'}
-                      alt={c.name?.common || 'Country flag'} 
-                      className="w-full h-48 object-cover rounded-lg opacity-90 hover:opacity-100 transition-opacity duration-300" 
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/earth.png';
-                      }}
-                    />
-                    <div className="mt-4">
-                      <h3 className={`text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-                        {getTranslatedName(c.cca3 || c.cca2, 'common') || c.name?.common || 'Unknown'} 
-                      </h3>
-                      <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'} mb-2`}>
-                        {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : 'Unknown Region'}
-                      </p>
-                      
-                      <div className="flex items-center justify-between mt-3">
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                          (c.population ?? 0) < 1000000 
-                            ? isDarkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700'
-                            : (c.population ?? 0) < 50000000
-                            ? isDarkMode ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-100 text-yellow-700'
-                            : isDarkMode ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-700'
-                        }`}>
-                          {(c.population ?? 0) > 1000000 
-                            ? `${((c.population ?? 0) / 1000000).toFixed(1)}M` 
-                            : (c.population ?? 0) > 1000
-                            ? `${((c.population ?? 0) / 1000).toFixed(0)}K`
-                            : (c.population ?? 0).toLocaleString()}
-                        </span>
-                        
-                        {c.emoji && (
-                          <span className="text-lg">{c.emoji}</span>
-                        )}
+                  <Tooltip
+                    content={
+                      <div className="space-y-2 p-2">
+                        <p className="font-semibold text-sm">{c.capital?.[0] || t("translationsTooltip:countryDetails.notAvailable")}</p>
+                        <div className="space-y-1 text-xs">
+                          <p><span className="font-medium">{t("translationsTooltip:countryDetails.region")}:</span> {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : t("translationsTooltip:countryDetails.notAvailable")}</p>
+                          <p><span className="font-medium">{t("translationsTooltip:countryDetails.population")}:</span> {(c.population ?? 0).toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")}</p>
+                          <p><span className="font-medium">{t("translationsTooltip:countryDetails.area")}:</span> {c.area?.toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")} km²</p>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                </Tooltip>
+                    }
+                    position="top"
+                  >
+                    <motion.div
+                      className={`group rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 h-full min-h-[420px] flex flex-col ${
+                        isDarkMode 
+                          ? "bg-neutral-800/80 border border-neutral-700/50 hover:border-neutral-600/70" 
+                          : "bg-white/80 border border-neutral-200/50 hover:border-neutral-300/70"
+                      } glass shadow-gentle hover:shadow-luxurious backdrop-blur-sm`}
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleCountryClick(c)}
+                    >
+                      {/* Flag container with fixed aspect ratio and overlay */}
+                      <div className="relative overflow-hidden rounded-t-3xl aspect-[4/3]">
+                        <img 
+                          src={c.flags?.svg || c.flags?.png || '/earth.png'} 
+                          alt={c.name?.common || 'Country flag'} 
+                          className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110" 
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/earth.png';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        {/* NOVO: Badge de região no canto */}
+                        <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
+                          isDarkMode 
+                            ? 'bg-black/40 text-white' 
+                            : 'bg-white/80 text-neutral-700'
+                        }`}>
+                          {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : 'Unknown'}
+                        </div>
+                      </div>
+                      
+                      {/* Content with fixed height and better spacing */}
+                      <div className="p-6 flex-1 flex flex-col justify-between min-h-[140px]">
+                        <div className="space-y-3">
+                          <h3 className={`text-xl font-bold leading-tight line-clamp-2 ${
+                            isDarkMode ? "text-white" : "text-neutral-900"
+                          }`}>
+                            {getTranslatedName(c.cca3, 'common') || c.name?.common || 'Unknown'}
+                          </h3>
+                          
+                          {/* NOVO: Informações adicionais com ícones */}
+                          <div className="flex items-center gap-4 text-sm">
+                            {c.capital?.[0] && (
+                              <div className="flex items-center gap-1">
+                                <FaMapMarkerAlt className={`w-3 h-3 ${
+                                  isDarkMode ? 'text-neutral-400' : 'text-neutral-500'
+                                }`} />
+                                <span className={isDarkMode ? 'text-neutral-300' : 'text-neutral-600'}>
+                                  {c.capital[0]}
+                                </span>
+                              </div>
+                            )}
+                            
+                            <div className="flex items-center gap-1">
+                              <FaUsers className={`w-3 h-3 ${
+                                isDarkMode ? 'text-neutral-400' : 'text-neutral-500'
+                              }`} />
+                              <span className={isDarkMode ? 'text-neutral-300' : 'text-neutral-600'}>
+                                {((c.population ?? 0) > 1000000 
+                                  ? `${((c.population ?? 0) / 1000000).toFixed(1)}M`
+                                  : ((c.population ?? 0) > 1000
+                                    ? `${((c.population ?? 0) / 1000).toFixed(0)}K`
+                                    : (c.population ?? 0).toLocaleString()
+                                  )
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* NOVO: Footer com emoji e indicador de hover */}
+                        <div className="flex items-center justify-between pt-4 border-t border-opacity-20 mt-4">
+                          <div className="flex items-center gap-2">
+                            {c.emoji && (
+                              <span className="text-lg">{c.emoji}</span>
+                            )}
+                            <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                              isDarkMode 
+                                ? 'bg-neutral-700/60 text-neutral-300' 
+                                : 'bg-neutral-100/60 text-neutral-600'
+                            }`}>
+                              {c.cca3}
+                            </span>
+                          </div>
+                          
+                          {/* NOVO: Indicador de hover animado */}
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            whileHover={{ scale: 1 }}
+                            className={`w-2 h-2 rounded-full ${
+                              isDarkMode ? 'bg-primary-400' : 'bg-primary-500'
+                            } opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  </Tooltip>
+                </motion.div>
               ))
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* Detalhes do País Selecionado */}
@@ -826,7 +890,11 @@ function Home({ isDarkMode }: HomeProps) {
 
         {/* Mensagem de Erro */}
         {errorMessage && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
             <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-neutral-300' : 'text-gray-800'}`}>
               {errorMessage}
             </h2>
