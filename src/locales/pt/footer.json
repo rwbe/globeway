@@ -1,4 +1,21 @@
 {
-    "madeWith": "Feito com",
-    "by": "por"
+  "madeWith": "Feito com",
+  "by": "por",
+  "countries": "Países",
+  "users": "Usuários",
+  "uptime": "Uptime", 
+  "secure": "Seguro",
+  "quickLinks": "Links Rápidos",
+  "home": "Início",
+  "about": "Sobre",
+  "feedback": "Feedback",
+  "technologies": "Tecnologias",
+  "apiSource": "Dados fornecidos pela REST Countries API",
+  "description": "Explore o mundo na ponta dos seus dedos. Descubra países, culturas e dados fascinantes com nossa plataforma moderna e intuitiva.",
+  "stats": {
+    "countries": "195+",
+    "activeUsers": "25K+",
+    "uptime": "99.9%",
+    "secure": "100%"
   }
+}
