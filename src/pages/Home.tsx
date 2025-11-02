@@ -1,4 +1,4 @@
-// Home.tsx 
+// Home.tsx
 import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
@@ -10,7 +10,27 @@ import { useTranslation } from 'react-i18next';
 import Tooltip from '../components/Tooltip';
 import { useTranslatedCountryNames } from '../utils/translateCountryNames'; 
 import { useBulkEconomicData } from '../hooks/useEnhancedCountryData';
-import { FaGlobe, FaUsers, FaMapMarkerAlt, FaExclamationTriangle } from 'react-icons/fa'; // NOVOS ÍCONES
+import { FaGlobe, FaUsers, FaMapMarkerAlt, FaExclamationTriangle } from 'react-icons/fa'; 
+
+// Interfaces para os tipos GraphQL
+interface GraphQLCountry {
+  code: string;
+  name: string;
+  native: string;
+  capital: string;
+  emoji: string;
+  currency: string;
+  continent: { name: string };
+  languages: Array<{ code: string; name: string }>;
+  phone: string;
+  states: Array<{ name: string }>;
+}
+
+interface GraphQLResponse {
+  data: {
+    countries: GraphQLCountry[];
+  };
+}
 
 interface HomeProps {
   isDarkMode: boolean;
@@ -52,7 +72,7 @@ function Home({ isDarkMode }: HomeProps) {
       // Buscar ambas as APIs simultaneamente
       const [restData, graphqlData] = await Promise.allSettled([
         // REST Countries API
-        axios.get(
+        axios.get<Country[]>(
           'https://restcountries.com/v3.1/all?fields=name,cca2,flags,capital,region,population,languages,currencies,area,timezones',
           {
             timeout: 15000,
@@ -67,7 +87,7 @@ function Home({ isDarkMode }: HomeProps) {
         }),
         
         // GraphQL Countries API
-        axios.post(
+        axios.post<GraphQLResponse>(
           'https://countries.trevorblades.com/',
           {
             query: `{
@@ -108,9 +128,9 @@ function Home({ isDarkMode }: HomeProps) {
       }
 
       // Criar mapa de países do GraphQL para fácil acesso
-      const graphqlMap = new Map();
+      const graphqlMap = new Map<string, GraphQLCountry>();
       if (graphqlCountries) {
-        graphqlCountries.forEach((country: any) => {
+        graphqlCountries.forEach((country: GraphQLCountry) => {
           graphqlMap.set(country.code, country);
         });
       }
@@ -120,7 +140,7 @@ function Home({ isDarkMode }: HomeProps) {
       // Se temos dados da REST Countries, usamos como base e complementamos com GraphQL
       if (restCountries) {
         console.log('🔀 Mesclando dados: REST Countries (base) + GraphQL (complemento)');
-        finalData = restCountries.map((restCountry: any) => {
+        finalData = restCountries.map((restCountry: Country) => {
           const graphqlCountry = graphqlMap.get(restCountry.cca2);
           
           return {
@@ -133,18 +153,23 @@ function Home({ isDarkMode }: HomeProps) {
               ? { root: graphqlCountry.phone, suffixes: [''] }
               : restCountry.idd,
             emoji: graphqlCountry?.emoji || '',
-            states: graphqlCountry?.states?.map((s: any) => s.name) || []
+            states: graphqlCountry?.states?.map((s: { name: string }) => s.name) || []
           };
         });
       } 
       // Se REST Countries falhou, usar GraphQL como única fonte
       else {
         console.log('🔀 Usando GraphQL Countries como fonte única');
-        finalData = graphqlCountries.map((country: any) => ({
+        finalData = (graphqlCountries as GraphQLCountry[]).map((country: GraphQLCountry) => ({
           name: {
             common: country.name,
             official: country.name,
-            nativeName: { [country.code.toLowerCase()]: { official: country.native, common: country.native } },
+            nativeName: { 
+              [country.code.toLowerCase()]: { 
+                official: country.native, 
+                common: country.native 
+              } 
+            },
             native: country.native
           },
           cca2: country.code,
@@ -156,7 +181,7 @@ function Home({ isDarkMode }: HomeProps) {
           capital: country.capital ? [country.capital] : [],
           region: country.continent?.name || 'Unknown',
           population: 0,
-          languages: country.languages?.reduce((acc: any, lang: any) => {
+          languages: country.languages?.reduce((acc: Record<string, string>, lang: { code: string; name: string }) => {
             acc[lang.code] = lang.name;
             return acc;
           }, {}) || {},
@@ -167,31 +192,31 @@ function Home({ isDarkMode }: HomeProps) {
           continents: country.continent ? [country.continent.name] : [],
           idd: { root: country.phone || '', suffixes: [''] },
           emoji: country.emoji || '',
-          states: country.states?.map((s: any) => s.name) || [],
+          states: country.states?.map((s: { name: string }) => s.name) || [],
           area: 0
         }));
       }
 
       console.log(`🎉 Sistema híbrido: ${finalData.length} países com dados mesclados de ${restCountries ? 'REST+GraphQL' : 'GraphQL'}`);
-      return finalData as Country[];
+      return finalData;
     },
     {
-      retry: (failureCount) => {
+      retry: (failureCount: number) => {
         if (failureCount < 2) {
           console.log(`🔄 Tentativa ${failureCount + 1} de 2...`);
           return true;
         }
         return false;
       },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+      retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 10000),
       staleTime: 10 * 60 * 1000,
       cacheTime: 30 * 60 * 1000,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
-      onError: (err) => {
+      onError: (err: Error) => {
         console.error('❌ Erro ao carregar países após todas as tentativas:', err);
       },
-      onSuccess: (data) => {
+      onSuccess: (data: Country[] | undefined) => {
         console.log(`🎉 Dados dos países carregados com sucesso: ${data?.length} países`);
       }
     }
@@ -211,8 +236,8 @@ function Home({ isDarkMode }: HomeProps) {
       // Usar dados locais para sugestões quando possível
       if (countries && countries.length > 0) {
         const localSuggestions = countries
-          .filter(c => c.name?.common?.toLowerCase().includes(query.toLowerCase()))
-          .map(c => c.name.common)
+          .filter((c: Country) => c.name?.common?.toLowerCase().includes(query.toLowerCase()))
+          .map((c: Country) => c.name.common)
           .slice(0, 10);
         
         if (localSuggestions.length > 0) {
@@ -223,7 +248,7 @@ function Home({ isDarkMode }: HomeProps) {
 
       // Fallback para API apenas se necessário
       try {
-        const response = await axios.get(`https://restcountries.com/v3.1/name/${query}?fields=name`, {
+        const response = await axios.get<Country[]>(`https://restcountries.com/v3.1/name/${query}?fields=name`, {
           timeout: 5000
         });
         const names = response.data.map((c: Country) => c.name.common).slice(0, 10);
@@ -251,7 +276,7 @@ function Home({ isDarkMode }: HomeProps) {
         
         for (const url of searchUrls) {
           try {
-            const response = await axios.get(url, {
+            const response = await axios.get<Country[]>(url, {
               timeout: 10000,
               headers: {
                 'Accept': 'application/json'
@@ -284,7 +309,7 @@ function Home({ isDarkMode }: HomeProps) {
   // Função para buscar dados completos de um país ao clicar no card
   const handleCountryClick = async (country: Country) => {
     try {
-      const response = await axios.get(
+      const response = await axios.get<Country[]>(
         `https://restcountries.com/v3.1/name/${country.name.common}?fullText=true`,
         {
           timeout: 10000,
@@ -321,7 +346,7 @@ function Home({ isDarkMode }: HomeProps) {
   };
 
   // Filtrar países com base nos filtros aplicados
-  const filteredCountries = countries?.filter((c) => {
+  const filteredCountries = countries?.filter((c: Country) => {
     const population = c.population ?? 0;
     
     const matchesRegion = !regionFilter || c.region === regionFilter;
@@ -332,14 +357,14 @@ function Home({ isDarkMode }: HomeProps) {
       (populationSizeFilter === 'large' && population >= 50000000);
     const matchesTLD = !tldFilter || (c.tld && c.tld.includes(tldFilter));
     const matchesLanguage = !languageFilter || 
-      (c.languages && Object.values(c.languages).some(lang => 
+      (c.languages && Object.values(c.languages).some((lang: string) => 
         lang.toLowerCase().includes(languageFilter.toLowerCase())
       ));
     
     return matchesRegion && matchesMaxPopulation && matchesPopulationSize && matchesTLD && matchesLanguage;
   });
 
-  const sortedCountries = filteredCountries?.sort((a, b) => {
+  const sortedCountries = filteredCountries?.sort((a: Country, b: Country) => {
     const nameA = a.name?.common || '';
     const nameB = b.name?.common || '';
     return nameA.localeCompare(nameB);
@@ -753,7 +778,7 @@ function Home({ isDarkMode }: HomeProps) {
               </div>
             ) : (
               // NOVO: Cards de Países Modernizados
-              sortedCountries?.map((c, index) => (
+              sortedCountries?.map((c: Country, index: number) => (
                 <motion.div
                   key={c.cca3}
                   initial={{ opacity: 0, y: 20 }}
