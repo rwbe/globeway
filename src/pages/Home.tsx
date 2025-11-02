@@ -1,4 +1,4 @@
-// Home.tsx - ATUALIZADO (Commit 2)
+// Home.tsx 
 import { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
@@ -9,7 +9,7 @@ import type { Country } from '../types/country';
 import { useTranslation } from 'react-i18next'; 
 import Tooltip from '../components/Tooltip';
 import { useTranslatedCountryNames } from '../utils/translateCountryNames'; 
-import { useBulkEconomicData } from '../hooks/useEnhancedCountryData'; // NOVO
+import { useBulkEconomicData } from '../hooks/useEnhancedCountryData';
 
 interface HomeProps {
   isDarkMode: boolean;
@@ -25,7 +25,9 @@ function Home({ isDarkMode }: HomeProps) {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [regionFilter, setRegionFilter] = useState('');
   const [populationFilter, setPopulationFilter] = useState(0);
+  const [populationSizeFilter, setPopulationSizeFilter] = useState(''); // NOVO: Filtro por tamanho
   const [tldFilter, setTldFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState(''); // NOVO: Filtro por idioma
   const [errorMessage, setErrorMessage] = useState('');
 
   // Scroll para o topo quando selecionar um país
@@ -63,7 +65,7 @@ function Home({ isDarkMode }: HomeProps) {
           return null;
         }),
         
-        // GraphQL Countries API - NOVA FONTE
+        // GraphQL Countries API
         axios.post(
           'https://countries.trevorblades.com/',
           {
@@ -123,18 +125,14 @@ function Home({ isDarkMode }: HomeProps) {
           // Mesclar dados das duas APIs
           return {
             ...restCountry,
-            // Se GraphQL tem nome nativo mais completo, usar
             name: {
               ...restCountry.name,
               native: graphqlCountry?.native || restCountry.name.common
             },
-            // GraphQL tem phone codes mais confiáveis
             idd: graphqlCountry?.phone 
               ? { root: graphqlCountry.phone, suffixes: [''] }
               : restCountry.idd,
-            // Adicionar emoji do GraphQL (REST não tem)
             emoji: graphqlCountry?.emoji || '',
-            // Adicionar estados/províncias do GraphQL (REST não tem)
             states: graphqlCountry?.states?.map((s: any) => s.name) || []
           };
         });
@@ -157,7 +155,7 @@ function Home({ isDarkMode }: HomeProps) {
           },
           capital: country.capital ? [country.capital] : [],
           region: country.continent?.name || 'Unknown',
-          population: 0, // GraphQL não tem população
+          population: 0,
           languages: country.languages?.reduce((acc: any, lang: any) => {
             acc[lang.code] = lang.name;
             return acc;
@@ -170,7 +168,7 @@ function Home({ isDarkMode }: HomeProps) {
           idd: { root: country.phone || '', suffixes: [''] },
           emoji: country.emoji || '',
           states: country.states?.map((s: any) => s.name) || [],
-          area: 0 // GraphQL não tem área
+          area: 0
         }));
       }
 
@@ -179,7 +177,6 @@ function Home({ isDarkMode }: HomeProps) {
     },
     {
       retry: (failureCount) => {
-        // Retry até 2 vezes apenas
         if (failureCount < 2) {
           console.log(`🔄 Tentativa ${failureCount + 1} de 2...`);
           return true;
@@ -200,7 +197,7 @@ function Home({ isDarkMode }: HomeProps) {
     }
   );
 
-  // NOVO: Pré-carregar dados econômicos para países principais
+  // Pré-carregar dados econômicos para países principais
   useBulkEconomicData(countries || [], !!countries && countries.length > 0);
 
   // Função para buscar sugestões de países (com throttling)
@@ -247,7 +244,6 @@ function Home({ isDarkMode }: HomeProps) {
     async () => {
       if (!searchQuery) return null;
       try {
-        // Para busca por nome, a API não limita campos
         const searchUrls = [
           `https://restcountries.com/v3.1/name/${searchQuery}`,
           `https://restcountries.com/v2/name/${searchQuery}`
@@ -288,7 +284,6 @@ function Home({ isDarkMode }: HomeProps) {
   // Função para buscar dados completos de um país ao clicar no card
   const handleCountryClick = async (country: Country) => {
     try {
-      // Buscar dados completos do país usando o nome
       const response = await axios.get(
         `https://restcountries.com/v3.1/name/${country.name.common}?fullText=true`,
         {
@@ -300,7 +295,6 @@ function Home({ isDarkMode }: HomeProps) {
       if (response.data && response.data.length > 0) {
         setSelectedCountry(response.data[0]);
       } else {
-        // Se falhar, usa os dados que já temos
         setSelectedCountry(country);
       }
     } catch (error) {
@@ -309,30 +303,58 @@ function Home({ isDarkMode }: HomeProps) {
     }
   };
 
+  // NOVO: Função para limpar todos os filtros
+  const clearAllFilters = () => {
+    setRegionFilter('');
+    setPopulationFilter(0);
+    setPopulationSizeFilter('');
+    setTldFilter('');
+    setLanguageFilter('');
+  };
+
   // Função para retornar ao estado inicial
   const handleGoBack = () => {
     setSelectedCountry(null);
     setSearchQuery("");
     setErrorMessage("");
+    clearAllFilters(); // NOVO: Limpa filtros ao voltar
   };
 
-  // Filtrar países com base nos filtros aplicados
+  // Filtrar países com base nos filtros aplicados - ATUALIZADO com novos filtros
   const filteredCountries = countries?.filter((c) => {
-    return (
-      (!regionFilter || c.region === regionFilter) &&
-      (!populationFilter || ((c.population ?? 0) <= populationFilter)) && // MELHORADO: null safety
-      (!tldFilter || (c.tld && c.tld.includes(tldFilter)))
-    );
+    const population = c.population ?? 0;
+    
+    const matchesRegion = !regionFilter || c.region === regionFilter;
+    const matchesMaxPopulation = !populationFilter || (population <= populationFilter);
+    
+    // NOVO: Filtro por tamanho de população
+    const matchesPopulationSize = !populationSizeFilter || 
+      (populationSizeFilter === 'small' && population < 1000000) ||
+      (populationSizeFilter === 'medium' && population >= 1000000 && population < 50000000) ||
+      (populationSizeFilter === 'large' && population >= 50000000);
+    
+    const matchesTLD = !tldFilter || (c.tld && c.tld.includes(tldFilter));
+    
+    // NOVO: Filtro por idioma
+    const matchesLanguage = !languageFilter || 
+      (c.languages && Object.values(c.languages).some(lang => 
+        lang.toLowerCase().includes(languageFilter.toLowerCase())
+      ));
+    
+    return matchesRegion && matchesMaxPopulation && matchesPopulationSize && matchesTLD && matchesLanguage;
   });
 
   const sortedCountries = filteredCountries?.sort((a, b) => {
-    const nameA = a.name?.common || ''; // MELHORADO: null safety
+    const nameA = a.name?.common || '';
     const nameB = b.name?.common || '';
     return nameA.localeCompare(nameB);
   });
 
   const filteredCount = filteredCountries?.length || 0;
   const totalCountries = countries?.length || 0;
+
+  // Verificar se há filtros ativos - NOVO
+  const hasActiveFilters = regionFilter || populationFilter > 0 || populationSizeFilter || tldFilter || languageFilter;
 
   // Atualiza as sugestões de pesquisa com debounce
   useEffect(() => {
@@ -375,76 +397,207 @@ function Home({ isDarkMode }: HomeProps) {
           isDarkMode={isDarkMode}
         />
 
-        {/* Filtros de Pesquisa */}
+        {/* Filtros de Pesquisa - ATUALIZADO com novos filtros */}
         {!searchQuery && !selectedCountry && (
-          <div className="flex flex-wrap gap-4 mb-6">
-            <select
-              onChange={(e) => setRegionFilter(e.target.value)}
-              className={`border p-2 rounded ${isDarkMode ? 'bg-neutral-800 text-white' : 'bg-white text-gray-900'}`}
-            >
-              <option value="">{t('allRegions')}</option>
-              {Object.entries(t('regions', { returnObjects: true })).map(([key, value]) => (
-                <option key={key} value={value}>{value}</option>
-              ))}
-            </select>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            {/* Linha de filtros principais */}
+            <div className="flex flex-wrap gap-4 justify-center">
+              {/* Filtro de Região */}
+              <div className="relative">
+                <select
+                  value={regionFilter}
+                  onChange={(e) => setRegionFilter(e.target.value)}
+                  className={`appearance-none px-4 py-2 pr-8 rounded-lg font-medium transition-all duration-200 cursor-pointer border-2 ${
+                    isDarkMode 
+                      ? 'bg-neutral-800 text-white border-neutral-600 hover:border-neutral-500' 
+                      : 'bg-white text-gray-900 border-gray-300 hover:border-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                >
+                  <option value="">{t('allRegions')}</option>
+                  <option value="Africa">{t('regions.africa')}</option>
+                  <option value="Americas">{t('regions.americas')}</option>
+                  <option value="Asia">{t('regions.asia')}</option>
+                  <option value="Europe">{t('regions.europe')}</option>
+                  <option value="Oceania">{t('regions.oceania')}</option>
+                  <option value="Antarctic">{t('regions.antarctic')}</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className={`w-4 h-4 ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
 
-            <input
-              type="number"
-              placeholder={t('maxPopulation')}
-              className={`border p-2 rounded ${isDarkMode ? 'bg-neutral-800 text-white' : 'bg-white text-gray-900'}`}
-              onChange={(e) => setPopulationFilter(Number(e.target.value))}
-            />
+              {/* NOVO: Filtro por Tamanho de População */}
+              <div className="relative">
+                <select
+                  value={populationSizeFilter}
+                  onChange={(e) => setPopulationSizeFilter(e.target.value)}
+                  className={`appearance-none px-4 py-2 pr-8 rounded-lg font-medium transition-all duration-200 cursor-pointer border-2 ${
+                    isDarkMode 
+                      ? 'bg-neutral-800 text-white border-neutral-600 hover:border-neutral-500' 
+                      : 'bg-white text-gray-900 border-gray-300 hover:border-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                >
+                  <option value="">{t('allSizes') || 'Todos os Tamanhos'}</option>
+                  <option value="small">{t('populationSizes.small') || 'Pequeno (< 1M)'}</option>
+                  <option value="medium">{t('populationSizes.medium') || 'Médio (1M - 50M)'}</option>
+                  <option value="large">{t('populationSizes.large') || 'Grande (> 50M)'}</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className={`w-4 h-4 ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
 
-            <input
-              type="text"
-              placeholder={t('domainPlaceholder')}
-              className={`border p-2 rounded ${isDarkMode ? 'bg-neutral-800 text-white' : 'bg-white text-gray-900'}`}
-              value={tldFilter}
-              onChange={(e) => setTldFilter(e.target.value)}
-            />
-          </div>
+              {/* NOVO: Filtro por Idioma */}
+              <input
+                type="text"
+                placeholder={t('languagePlaceholder') || "Filtrar por idioma..."}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 border-2 ${
+                  isDarkMode 
+                    ? 'bg-neutral-800 text-white placeholder-neutral-400 border-neutral-600 hover:border-neutral-500' 
+                    : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 hover:border-gray-400'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                value={languageFilter}
+                onChange={(e) => setLanguageFilter(e.target.value)}
+              />
+            </div>
+
+            {/* Linha de filtros secundários */}
+            <div className="flex flex-wrap gap-4 justify-center">
+              {/* Filtro de População Máxima */}
+              <input
+                type="number"
+                placeholder={t('maxPopulation')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 border-2 ${
+                  isDarkMode 
+                    ? 'bg-neutral-800 text-white placeholder-neutral-400 border-neutral-600 hover:border-neutral-500' 
+                    : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 hover:border-gray-400'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                onChange={(e) => setPopulationFilter(Number(e.target.value))}
+              />
+
+              {/* Filtro de Domínio */}
+              <input
+                type="text"
+                placeholder={t('domainPlaceholder')}
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 border-2 ${
+                  isDarkMode 
+                    ? 'bg-neutral-800 text-white placeholder-neutral-400 border-neutral-600 hover:border-neutral-500' 
+                    : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 hover:border-gray-400'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                value={tldFilter}
+                onChange={(e) => setTldFilter(e.target.value)}
+              />
+
+              {/* NOVO: Botão Limpar Filtros */}
+              {hasActiveFilters && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={clearAllFilters}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 border-2 ${
+                    isDarkMode 
+                      ? 'bg-red-900/50 text-red-300 border-red-700 hover:bg-red-800/50 hover:border-red-600' 
+                      : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300'
+                  } focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent`}
+                >
+                  {t('clearFilters') || 'Limpar Filtros'}
+                </motion.button>
+              )}
+            </div>
+          </motion.div>
         )}
 
-        {/* Filtro de Exibição */}
+        {/* Filtro de Exibição - ATUALIZADO com novos status */}
         {!searchQuery && !selectedCountry && (
-          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-neutral-800' : 'bg-white'} shadow-sm`}>
-            <p className={`text-lg font-medium ${isDarkMode ? 'text-neutral-300' : 'text-gray-700'}`}>
-              {t('showing')} <span className="font-bold">{filteredCount}</span> {t('of')}{' '}
-              <span className="font-bold">{totalCountries}</span> {t('countries')}
-            </p>
-            {regionFilter && (
-              <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
-                {t('filteredByRegion')} <span className="font-bold">{regionFilter}</span>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`p-6 rounded-xl ${isDarkMode ? 'bg-neutral-800' : 'bg-white'} shadow-lg border ${
+              isDarkMode ? 'border-neutral-700' : 'border-gray-200'
+            }`}
+          >
+            <div className="text-center space-y-3">
+              <p className={`text-xl font-bold ${isDarkMode ? 'text-neutral-300' : 'text-gray-800'}`}>
+                {t('showing')} <span className="text-blue-600">{filteredCount}</span> {t('of')}{' '}
+                <span className="text-blue-600">{totalCountries}</span> {t('countries')}
               </p>
-            )}
-            {populationFilter > 0 && (
-              <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
-                {t('filteredByPopulation')} <span className="font-bold">≤ {populationFilter.toLocaleString()}</span>
-              </p>
-            )}
-            {tldFilter && (
-              <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-500'}`}>
-                {t('filteredByDomain')} <span className="font-bold">{tldFilter}</span>
-              </p>
-            )}
-            
-            {/* NOVO: Indicador de fonte de dados */}
-            <p className={`text-xs mt-2 ${isDarkMode ? 'text-neutral-500' : 'text-gray-400'}`}>
-              Dados carregados de: {countries && countries[0]?.emoji ? 'REST + GraphQL' : 'REST Countries'}
-            </p>
-          </div>
+              
+              {/* NOVO: Badges de filtros ativos */}
+              {hasActiveFilters && (
+                <div className="flex flex-wrap justify-center gap-2 mt-4">
+                  {regionFilter && (
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      isDarkMode 
+                        ? 'bg-blue-900/50 text-blue-300 border border-blue-700/50' 
+                        : 'bg-blue-50 text-blue-700 border border-blue-200'
+                    }`}>
+                      {t('filteredByRegion')}: {regionFilter}
+                    </span>
+                  )}
+                  {populationFilter > 0 && (
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      isDarkMode 
+                        ? 'bg-green-900/50 text-green-300 border border-green-700/50' 
+                        : 'bg-green-50 text-green-700 border border-green-200'
+                    }`}>
+                      {t('filteredByPopulation')}: ≤ {populationFilter.toLocaleString()}
+                    </span>
+                  )}
+                  {populationSizeFilter && (
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      isDarkMode 
+                        ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' 
+                        : 'bg-purple-50 text-purple-700 border border-purple-200'
+                    }`}>
+                      {t('filteredBySize') || 'Tamanho'}: {
+                        populationSizeFilter === 'small' ? (t('populationSizes.small') || 'Pequeno') : 
+                        populationSizeFilter === 'medium' ? (t('populationSizes.medium') || 'Médio') : 
+                        (t('populationSizes.large') || 'Grande')
+                      }
+                    </span>
+                  )}
+                  {languageFilter && (
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      isDarkMode 
+                        ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50' 
+                        : 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                    }`}>
+                      {t('filteredByLanguage') || 'Idioma'}: {languageFilter}
+                    </span>
+                  )}
+                  {tldFilter && (
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      isDarkMode 
+                        ? 'bg-gray-700/50 text-gray-300 border border-gray-600/50' 
+                        : 'bg-gray-100 text-gray-700 border border-gray-300'
+                    }`}>
+                      {t('filteredByDomain')}: {tldFilter}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </motion.div>
         )}
 
-        {/* Exibição de Países - MELHORADO com fallback de imagem */}
+        {/* Exibição de Países - ATUALIZADO com indicadores de população */}
         {!searchQuery && !selectedCountry && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
             {isLoadingCountries ? (
               <div className="col-span-full flex justify-center items-center py-8">
                 <div className="text-center">
-                  <div className={`w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin mx-auto mb-2 ${
-                    isDarkMode ? 'border-primary-800 border-t-primary-400' : ''
+                  <div className={`w-8 h-8 border-2 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-2 ${
+                    isDarkMode ? 'border-blue-800 border-t-blue-400' : ''
                   }`}></div>
-                  <p className="text-neutral-500">Carregando países...</p>
+                  <p className="text-neutral-500">{t('loadingCountries')}</p>
                 </div>
               </div>
             ) : isCountriesError ? (
@@ -476,27 +629,33 @@ function Home({ isDarkMode }: HomeProps) {
             ) : (
               sortedCountries?.map((c) => (
                 <Tooltip
-                  key={c.cca3 || c.cca2} // MELHORADO: fallback para cca2
+                  key={c.cca3 || c.cca2}
                   content={
-                    <div className="space-y-1">
-                      <p><strong>{t("translationsTooltip:countryDetails.capital")}:</strong> {c.capital?.[0] || t("translationsTooltip:countryDetails.notAvailable")}</p>
-                      <p><strong>{t("translationsTooltip:countryDetails.region")}:</strong> {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : t("translationsTooltip:countryDetails.notAvailable")}</p>
-                      <p><strong>{t("translationsTooltip:countryDetails.population")}:</strong> {(c.population ?? 0).toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")}</p>
-                      <p><strong>{t("translationsTooltip:countryDetails.area")}:</strong> {c.area?.toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")} km²</p>
-                      {c.emoji && ( // NOVO: mostrar emoji se disponível
-                        <p><strong>Emoji:</strong> {c.emoji}</p>
-                      )}
+                    <div className="space-y-2 p-2">
+                      <p className="font-semibold text-sm">{c.capital?.[0] || t("translationsTooltip:countryDetails.notAvailable")}</p>
+                      <div className="space-y-1 text-xs">
+                        <p><span className="font-medium">{t("translationsTooltip:countryDetails.region")}:</span> {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : t("translationsTooltip:countryDetails.notAvailable")}</p>
+                        <p><span className="font-medium">{t("translationsTooltip:countryDetails.population")}:</span> {(c.population ?? 0).toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")}</p>
+                        <p><span className="font-medium">{t("translationsTooltip:countryDetails.area")}:</span> {c.area?.toLocaleString() || t("translationsTooltip:countryDetails.notAvailable")} km²</p>
+                        {c.languages && (
+                          <p><span className="font-medium">{t("translationsTooltip:countryDetails.languages")}:</span> {Object.values(c.languages).slice(0, 3).join(", ")}</p>
+                        )}
+                      </div>
                     </div>
                   }
                   position="top"
                 >
                   <motion.div
-                    className={`p-6 border rounded-xl cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 ease-in-out ${isDarkMode ? "bg-neutral-800" : "bg-white"}`}
-                    whileHover={{ scale: 1.03 }}
+                    className={`p-6 border-2 rounded-xl cursor-pointer shadow-md hover:shadow-lg transition-all duration-300 ease-in-out ${
+                      isDarkMode 
+                        ? "bg-neutral-800 border-neutral-700 hover:border-neutral-600" 
+                        : "bg-white border-gray-200 hover:border-gray-300"
+                    }`}
+                    whileHover={{ scale: 1.03, y: -2 }}
                     onClick={() => handleCountryClick(c)}
                   >
                     <img 
-                      src={c.flags?.svg || c.flags?.png || '/earth.png'} // MELHORADO: fallback de imagem
+                      src={c.flags?.svg || c.flags?.png || '/earth.png'}
                       alt={c.name?.common || 'Country flag'} 
                       className="w-full h-48 object-cover rounded-lg opacity-90 hover:opacity-100 transition-opacity duration-300" 
                       onError={(e) => {
@@ -504,15 +663,35 @@ function Home({ isDarkMode }: HomeProps) {
                         target.src = '/earth.png';
                       }}
                     />
-                    <h3 className={`mt-4 text-xl font-medium ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-                      {getTranslatedName(c.cca3 || c.cca2, 'common') || c.name?.common || 'Unknown'} 
-                    </h3>
-                    <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'}`}>
-                      {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : 'Unknown Region'}
-                    </p>
-                    {c.emoji && ( // NOVO: mostrar emoji do país
-                      <p className="text-2xl mt-2">{c.emoji}</p>
-                    )}
+                    <div className="mt-4">
+                      <h3 className={`text-xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+                        {getTranslatedName(c.cca3 || c.cca2, 'common') || c.name?.common || 'Unknown'} 
+                      </h3>
+                      <p className={`text-sm ${isDarkMode ? 'text-neutral-400' : 'text-gray-600'} mb-2`}>
+                        {c.region ? t(`translationsTooltip:regions.${c.region.toLowerCase()}`) : 'Unknown Region'}
+                      </p>
+                      
+                      {/* NOVO: Indicador de população com badge colorido */}
+                      <div className="flex items-center justify-between mt-3">
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                          (c.population ?? 0) < 1000000 
+                            ? isDarkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-700'
+                            : (c.population ?? 0) < 50000000
+                            ? isDarkMode ? 'bg-yellow-900/50 text-yellow-300' : 'bg-yellow-100 text-yellow-700'
+                            : isDarkMode ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-700'
+                        }`}>
+                          {(c.population ?? 0) > 1000000 
+                            ? `${((c.population ?? 0) / 1000000).toFixed(1)}M` 
+                            : (c.population ?? 0) > 1000
+                            ? `${((c.population ?? 0) / 1000).toFixed(0)}K`
+                            : (c.population ?? 0).toLocaleString()}
+                        </span>
+                        
+                        {c.emoji && (
+                          <span className="text-lg">{c.emoji}</span>
+                        )}
+                      </div>
+                    </div>
                   </motion.div>
                 </Tooltip>
               ))
