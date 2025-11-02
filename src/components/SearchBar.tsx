@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, Loader2, Mic } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import countryMappings from '../locales/countryMappings.json';
 
 declare global {
   interface Window {
@@ -30,35 +29,44 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isListening, setIsListening] = useState(false);
   const [recognizedText, setRecognizedText] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const stableOnSearch = useCallback(onSearch, [onSearch]);
-
-  const translateCountryName = (name: string): string => {
-    const mappings = countryMappings as Record<string, string>;
-    return mappings[name] || name;
-  };
 
   const handleVoiceSearch = () => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert('Seu navegador não suporta reconhecimento de voz.');
+      const messages = {
+        pt: 'Seu navegador não suporta reconhecimento de voz.',
+        en: 'Your browser does not support voice recognition.',
+      };
+      setErrorMessage(messages[i18n.language as keyof typeof messages] || messages.en);
+      setTimeout(() => setErrorMessage(''), 4000);
       return;
     }
 
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
-    recognition.lang = i18n.language === 'pt' ? 'pt-BR' : 'en-US';
+    
+    const languageMap = {
+      pt: 'pt-BR',
+      en: 'en-US',
+    };
+    recognition.lang = languageMap[i18n.language as keyof typeof languageMap] || 'en-US';
     recognition.interimResults = true;
+    recognition.maxAlternatives = 3;
+    recognition.continuous = false;
 
     let finalTranscript = '';
 
     recognition.onstart = () => {
       setIsListening(true);
       setRecognizedText('');
+      setErrorMessage('');
     };
 
     recognition.onresult = (event) => {
@@ -71,19 +79,54 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     recognition.onend = () => {
       setIsListening(false);
       if (finalTranscript.trim()) {
-        const translatedQuery = translateCountryName(finalTranscript);
-        setQuery(translatedQuery);
-        stableOnSearch(translatedQuery);
+        setQuery(finalTranscript);
+        stableOnSearch(finalTranscript);
       }
     };
 
     recognition.onerror = (event) => {
-      console.error('Erro no reconhecimento de voz:', event.error);
       setIsListening(false);
-      alert(`Erro no reconhecimento de voz: ${event.error}`);
+      
+      const errorMessages = {
+        'not-allowed': {
+          pt: 'Permissão de microfone negada',
+          en: 'Microphone permission denied',
+        },
+        'no-speech': {
+          pt: 'Nenhuma fala detectada',
+          en: 'No speech detected',
+        },
+        'network': {
+          pt: 'Erro de rede',
+          en: 'Network error',
+        },
+        'audio-capture': {
+          pt: 'Erro ao capturar áudio',
+          en: 'Audio capture error',
+        }
+      };
+
+      const lang = i18n.language as 'pt' | 'en';
+      const errorType = event.error as keyof typeof errorMessages;
+      const message = errorMessages[errorType]?.[lang] || 
+        (lang === 'pt' ? 'Erro no reconhecimento de voz' :
+         'Voice recognition error');
+      
+      setErrorMessage(message);
+      setTimeout(() => setErrorMessage(''), 4000);
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (error) {
+      setIsListening(false);
+      const messages = {
+        pt: 'Não foi possível iniciar o reconhecimento de voz',
+        en: 'Could not start voice recognition',
+      };
+      setErrorMessage(messages[i18n.language as keyof typeof messages] || messages.en);
+      setTimeout(() => setErrorMessage(''), 4000);
+    }
   };
 
   const stopVoiceSearch = () => {
@@ -92,10 +135,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    const translatedSuggestion = translateCountryName(suggestion);
-    setQuery(translatedSuggestion);
-    stableOnSearch(translatedSuggestion);
-    setSelectedIndex(-1); // Reseta o índice selecionado
+    setQuery(suggestion);
+    stableOnSearch(suggestion);
+    setSelectedIndex(-1); 
   };
 
   useEffect(() => {
@@ -114,8 +156,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           stableOnSearch(exactMatch);
         } else if (query.trim()) {
           // Caso contrário, realiza a busca com o texto digitado
-          const translatedQuery = translateCountryName(query.trim());
-          stableOnSearch(translatedQuery);
+          stableOnSearch(query.trim());
         }
       }
 
@@ -140,89 +181,171 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      const translatedQuery = translateCountryName(query.trim());
-      stableOnSearch(translatedQuery);
+      stableOnSearch(query.trim());
     }
   };
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1, duration: 0.6 }}
+      className="relative w-full max-w-3xl mx-auto"
+    >
+      {/* Voice recognition feedback */}
       <AnimatePresence>
         {isListening && recognizedText && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-[-40px] left-0 right-0 mx-auto bg-gray-800 text-white text-center p-2 rounded-md shadow-lg"
+            className={`absolute -top-16 left-0 right-0 mx-auto rounded-2xl shadow-elegant text-center p-4 glass ${
+              isDarkMode 
+                ? 'bg-neutral-800/90 text-white border border-neutral-700/50' 
+                : 'bg-white/90 text-neutral-900 border border-neutral-200/50'
+            }`}
           >
-            {recognizedText}
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">{recognizedText}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Error message */}
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={`absolute -top-16 left-0 right-0 mx-auto rounded-2xl shadow-elegant text-center p-4 glass ${
+              isDarkMode 
+                ? 'bg-red-900/90 text-red-100 border border-red-700/50' 
+                : 'bg-red-50/90 text-red-900 border border-red-200/50'
+            }`}
+          >
+            <span className="text-sm font-medium">{errorMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       <form onSubmit={handleSubmit} className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          placeholder={t('searchPlaceholder')}
-          className={`w-full px-6 py-3 text-lg rounded-lg border-2 transition-all pr-28 shadow-md
-            ${isDarkMode ? 'text-white bg-neutral-900 border-neutral-600' : 'text-neutral-900 bg-white border-neutral-300'}
-            ${isFocused ? 'border-blue-500' : ''}
-          `}
-        />
+        {/* Modern search input */}
+        <div className={`relative rounded-3xl overflow-hidden shadow-elegant ${
+          isDarkMode 
+            ? 'bg-neutral-800/80 border border-neutral-700/50' 
+            : 'bg-white/80 border border-neutral-200/50'
+        } glass transition-all duration-300 ${
+          isFocused 
+            ? 'ring-2 ring-primary-500/20 shadow-luxurious' 
+            : 'hover:shadow-modern'
+        }`}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder={t('searchPlaceholder')}
+            className={`w-full px-8 py-6 text-lg bg-transparent border-none outline-none pr-32 font-medium placeholder:font-normal ${
+              isDarkMode 
+                ? 'text-white placeholder-neutral-400' 
+                : 'text-neutral-900 placeholder-neutral-500'
+            }`}
+          />
 
-        {/* Lista de sugestões */}
-        {isFocused && suggestions.length > 0 && (
-          <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg">
-            {suggestions.map((suggestion, index) => (
-              <li
-                key={suggestion}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                  index === selectedIndex ? 'bg-gray-100' : ''
-                }`}
-              >
-                {suggestion}
-              </li>
-            ))}
-          </ul>
-        )}
+          {/* Action buttons */}
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-2">
+            {/* Voice button */}
+            <motion.button
+              type="button"
+              onClick={isListening ? stopVoiceSearch : handleVoiceSearch}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`p-3 rounded-2xl transition-all duration-200 ${
+                isListening 
+                  ? 'bg-red-500 text-white shadow-md animate-pulse' 
+                  : isDarkMode 
+                    ? 'text-neutral-400 hover:text-white hover:bg-neutral-700/50' 
+                    : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100/50'
+              }`}
+            >
+              <Mic size={20} />
+            </motion.button>
 
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex space-x-2">
-          <button
-            type="button"
-            onClick={isListening ? stopVoiceSearch : handleVoiceSearch}
-            className={`p-2 rounded-full transition-colors duration-200 
-              ${isListening ? 'bg-red-500 text-white animate-pulse' : isDarkMode ? 'text-white hover:bg-neutral-700' : 'text-gray-700 hover:bg-gray-200'}
-            `}
-          >
-            <Mic size={24} />
-          </button>
+            {/* Search button */}
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`p-3 rounded-2xl transition-all duration-200 ${
+                isDarkMode 
+                  ? 'text-neutral-400 hover:text-white hover:bg-neutral-700/50' 
+                  : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100/50'
+              }`}
+            >
+              <Search size={20} />
+            </motion.button>
+          </div>
 
-          <button
-            type="submit"
-            className={`p-2 rounded-full transition-colors duration-200 
-              ${isDarkMode ? 'text-white hover:bg-neutral-700' : 'text-gray-700 hover:bg-gray-200'}
-            `}
-          >
-            <Search size={24} />
-          </button>
+          {/* Loading indicator */}
+          {isLoading && (
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="absolute right-20 top-1/2 -translate-y-1/2"
+            >
+              <Loader2 size={20} className={`${
+                isDarkMode ? 'text-neutral-400' : 'text-neutral-500'
+              } animate-spin`} />
+            </motion.div>
+          )}
         </div>
 
-        {isLoading && (
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity }}
-            className="absolute right-24 top-1/2 -translate-y-1/2"
-          >
-            <Loader2 size={24} className={`${isDarkMode ? 'text-white' : 'text-gray-700'} animate-spin`} />
-          </motion.div>
-        )}
+        {/* Modern suggestions dropdown */}
+        <AnimatePresence>
+          {isFocused && suggestions.length > 0 && (
+            <motion.ul
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className={`absolute z-50 w-full mt-2 rounded-2xl overflow-hidden shadow-luxurious ${
+                isDarkMode 
+                  ? 'bg-neutral-800/95 border border-neutral-700/50' 
+                  : 'bg-white/95 border border-neutral-200/50'
+              } glass backdrop-blur-md`}
+            >
+              {suggestions.map((suggestion, index) => (
+                <motion.li
+                  key={suggestion}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  whileHover={{ x: 4 }}
+                  className={`px-6 py-4 cursor-pointer transition-all duration-150 border-b border-opacity-10 ${
+                    isDarkMode ? 'border-neutral-600' : 'border-neutral-200'
+                  } ${
+                    index === selectedIndex 
+                      ? isDarkMode 
+                        ? 'bg-neutral-700/50 text-white' 
+                        : 'bg-neutral-50/50 text-neutral-900'
+                      : isDarkMode
+                        ? 'text-neutral-300 hover:bg-neutral-700/30 hover:text-white'
+                        : 'text-neutral-700 hover:bg-neutral-50/30 hover:text-neutral-900'
+                  } ${index === suggestions.length - 1 ? 'border-b-0' : ''}`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Search size={16} className="opacity-40" />
+                    <span className="font-medium">{suggestion}</span>
+                  </div>
+                </motion.li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
       </form>
-    </div>
+    </motion.div>
   );
 };
