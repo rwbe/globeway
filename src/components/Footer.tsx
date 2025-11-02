@@ -18,8 +18,12 @@ export function Footer({ isDarkMode }: FooterProps) {
   const quickLinks = [
     { name: t('home'), href: "/" },
     { name: t('about'), href: "/about" },
-    { name: t('feedback'), href: "/feedback" },
-    { name: "API REST Countries", href: "https://restcountries.com", external: true }
+    { name: t('feedback'), href: "/feedback" }
+  ];
+
+  const apiLinks = [
+    { name: "REST Countries API", href: "https://restcountries.com", external: true },
+    { name: "GraphQL Countries API", href: "https://countries.trevorblades.com/", external: true }
   ];
 
   const currentYear = new Date().getFullYear();
@@ -41,14 +45,14 @@ export function Footer({ isDarkMode }: FooterProps) {
         {/* Main Footer Content */}
         <div className="py-16">
           {/* Middle Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
             {/* Brand Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-              className="lg:col-span-2"
+              className="lg:col-span-2 md:col-span-2"
             >
               <div className="flex items-center mb-6">
                 <img
@@ -102,8 +106,6 @@ export function Footer({ isDarkMode }: FooterProps) {
                   <li key={index}>
                     <motion.a
                       href={link.href}
-                      target={link.external ? "_blank" : "_self"}
-                      rel={link.external ? "noopener noreferrer" : ""}
                       whileHover={{ x: 4 }}
                       className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
                         isDarkMode 
@@ -112,18 +114,13 @@ export function Footer({ isDarkMode }: FooterProps) {
                       }`}
                     >
                       {link.name}
-                      {link.external && (
-                        <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      )}
                     </motion.a>
                   </li>
                 ))}
               </ul>
             </motion.div>
 
-            {/* Contact Info */}
+            {/* Technologies */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -156,17 +153,46 @@ export function Footer({ isDarkMode }: FooterProps) {
                     Framer Motion
                   </span>
                 </div>
-                <div className="flex items-center">
-                  <FaShieldAlt className={`w-4 h-4 mr-3 ${
-                    isDarkMode ? 'text-purple-400' : 'text-purple-600'
-                  }`} />
-                  <span className={`text-sm ${
-                    isDarkMode ? 'text-neutral-400' : 'text-neutral-600'
-                  }`}>
-                    REST Countries API
-                  </span>
-                </div>
               </div>
+            </motion.div>
+
+            {/* Data Sources / APIs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              <h4 className={`text-lg font-semibold mb-6 ${
+                isDarkMode ? 'text-white' : 'text-neutral-900'
+              }`}>
+                Fontes de Dados
+              </h4>
+              <ul className="space-y-3">
+                {apiLinks.map((link, index) => (
+                  <li key={index}>
+                    <motion.a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ x: 4 }}
+                      className={`inline-flex items-center text-sm font-medium transition-colors duration-200 ${
+                        isDarkMode 
+                          ? 'text-neutral-400 hover:text-blue-400' 
+                          : 'text-neutral-600 hover:text-blue-600'
+                      }`}
+                    >
+                      <FaShieldAlt className={`w-3 h-3 mr-2 ${
+                        isDarkMode ? 'text-purple-400' : 'text-purple-600'
+                      }`} />
+                      {link.name}
+                      <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </motion.a>
+                  </li>
+                ))}
+              </ul>
             </motion.div>
           </div>
         </div>
@@ -203,7 +229,7 @@ export function Footer({ isDarkMode }: FooterProps) {
             <div className={`text-sm ${
               isDarkMode ? 'text-neutral-500' : 'text-neutral-500'
             }`}>
-              {t('apiSource')}
+              Dados fornecidos por REST Countries & GraphQL Countries APIs
             </div>
           </div>
         </motion.div>
