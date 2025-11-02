@@ -3,24 +3,37 @@
     "description": "Descubra países clicando em uma bandeira ou pesquise por um nome.",
     "adventure": "Sua próxima aventura está a apenas um clique ou pesquisa de distância!",
     "allRegions": "Todas as Regiões",
+    "continents": "Continentes",
+    "instantSearch": "Busca Instantânea",
     "regions": {
-      "africa": "Africa",
-      "americas": "Americas",
-      "asia": "Asia",
-      "europe": "Europe",
+      "africa": "África",
+      "americas": "Américas",
+      "asia": "Ásia",
+      "europe": "Europa",
       "oceania": "Oceania",
-      "antarctic": "Antarctic"
+      "antarctic": "Antártida"
     },
     "maxPopulation": "População Máxima",
     "domainPlaceholder": "Domínio (ex: .br)",
+    "languagePlaceholder": "Filtrar por idioma",
+    "allSizes": "Todos os tamanhos",
+    "populationSizes": {
+      "small": "Pequeno (< 1M)",
+      "medium": "Médio (1M - 50M)",
+      "large": "Grande (> 50M)"
+    },
+    "clearFilters": "Limpar Filtros",
     "showing": "Mostrando",
     "of": "de",
     "countries": "países",
-    "filteredByRegion": "Filtrado por região:",
-    "filteredByPopulation": "Filtrado por população:",
-    "filteredByDomain": "Filtrado por domínio:",
+    "filteredByRegion": "Filtrado por região",
+    "filteredByPopulation": "Filtrado por população",
+    "filteredByDomain": "Filtrado por domínio",
+    "filteredByLanguage": "Filtrado por idioma",
+    "filteredBySize": "Filtrado por tamanho",
     "loadingCountries": "Carregando países...",
     "noCountryFound": "Nenhum país encontrado com esse nome.",
     "searchPlaceholder": "Digite o nome de um país...",
-    "goBack": "Voltar ao início"
+    "goBack": "Voltar ao início",
+    "exploreCountriesBelow": "Explore países abaixo"
   }

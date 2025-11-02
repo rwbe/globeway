@@ -870,31 +870,6 @@ function Home({ isDarkMode }: HomeProps) {
                             </div>
                           </div>
                         </div>
-                        
-                        {/* NOVO: Footer com emoji e indicador de hover */}
-                        <div className="flex items-center justify-between pt-4 border-t border-opacity-20 mt-4">
-                          <div className="flex items-center gap-2">
-                            {c.emoji && (
-                              <span className="text-lg">{c.emoji}</span>
-                            )}
-                            <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                              isDarkMode 
-                                ? 'bg-neutral-700/60 text-neutral-300' 
-                                : 'bg-neutral-100/60 text-neutral-600'
-                            }`}>
-                              {c.cca3}
-                            </span>
-                          </div>
-                          
-                          {/* NOVO: Indicador de hover animado */}
-                          <motion.div 
-                            initial={{ scale: 0 }}
-                            whileHover={{ scale: 1 }}
-                            className={`w-2 h-2 rounded-full ${
-                              isDarkMode ? 'bg-primary-400' : 'bg-primary-500'
-                            } opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
-                          />
-                        </div>
                       </div>
                     </motion.div>
                   </Tooltip>
