@@ -16,9 +16,68 @@
   }
 }
 
-.non-selectable {
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium px-6 py-3 rounded-2xl transition-all duration-200 shadow-elegant hover:shadow-modern focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply bg-white hover:bg-neutral-50 text-neutral-700 font-medium px-6 py-3 rounded-2xl border border-neutral-200 transition-all duration-200 shadow-gentle hover:shadow-elegant focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .card {
+    @apply bg-white/80 backdrop-blur-sm border border-neutral-200/50 rounded-3xl shadow-gentle hover:shadow-modern transition-all duration-300;
+  }
+  
+  .card-dark {
+    @apply bg-neutral-800/80 backdrop-blur-sm border border-neutral-700/50 rounded-3xl shadow-gentle hover:shadow-modern transition-all duration-300;
+  }
+  
+  .input-modern {
+    @apply w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-neutral-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 placeholder-neutral-400;
+  }
+  
+  .input-modern-dark {
+    @apply w-full px-4 py-3 bg-neutral-800/80 backdrop-blur-sm border border-neutral-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 placeholder-neutral-500 text-white;
+  }
+}
+
+@layer utilities {
+  .non-selectable {
     user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;
   }
+  
+  .text-gradient {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #0369a1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .glass {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  
+  .glass-subtle {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
   
