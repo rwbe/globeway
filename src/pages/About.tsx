@@ -1,5 +1,6 @@
 import { FC, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { FaGlobe, FaSearch, FaLanguage, FaMicrophone, FaChartBar, FaMobile } from 'react-icons/fa';
 
 interface AboutProps {
@@ -7,39 +8,42 @@ interface AboutProps {
 }
 
 const About: FC<AboutProps> = ({ isDarkMode }) => {
+  const { t } = useTranslation('about');
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
   const features = [
     {
       icon: <FaGlobe className="w-8 h-8" />,
-      title: "Explore Países",
-      description: "Descubra informações detalhadas sobre todos os países do mundo com dados atualizados."
+      title: t('features.explore.title'),
+      description: t('features.explore.description')
     },
     {
       icon: <FaSearch className="w-8 h-8" />,
-      title: "Busca Inteligente",
-      description: "Sistema de busca avançado com sugestões em tempo real e filtros personalizados."
+      title: t('features.search.title'),
+      description: t('features.search.description')
     },
     {
       icon: <FaMicrophone className="w-8 h-8" />,
-      title: "Busca por Voz",
-      description: "Use comandos de voz para encontrar países de forma rápida e intuitiva."
+      title: t('features.voice.title'),
+      description: t('features.voice.description')
     },
     {
       icon: <FaLanguage className="w-8 h-8" />,
-      title: "Multilíngue",
-      description: "Interface disponível em português e inglês com traduções automáticas."
+      title: t('features.multilang.title'),
+      description: t('features.multilang.description')
     },
     {
       icon: <FaChartBar className="w-8 h-8" />,
-      title: "Dados Estatísticos",
-      description: "Visualize estatísticas detalhadas como população, área, economia e muito mais."
+      title: t('features.stats.title'),
+      description: t('features.stats.description')
     },
     {
       icon: <FaMobile className="w-8 h-8" />,
-      title: "Design Responsivo",
-      description: "Experiência otimizada para desktop, tablet e dispositivos móveis."
+      title: t('features.responsive.title'),
+      description: t('features.responsive.description')
     }
   ];
 
@@ -53,16 +57,18 @@ const About: FC<AboutProps> = ({ isDarkMode }) => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h1 className={`text-5xl font-bold mb-6 ${
-            isDarkMode ? 'text-white' : 'text-neutral-900'
-          }`}>
-            Sobre o <span className="text-gradient">GlobeWay</span>
-          </h1>
+          <h1 
+            className={`text-5xl font-bold mb-6 ${
+              isDarkMode ? 'text-white' : 'text-neutral-900'
+            }`}
+            dangerouslySetInnerHTML={{ 
+              __html: t('heroTitle', { defaultValue: 'Sobre o <span class="text-gradient">GlobeWay</span>' })
+            }}
+          />
           <p className={`text-xl leading-relaxed max-w-3xl mx-auto ${
             isDarkMode ? 'text-neutral-300' : 'text-neutral-600'
           }`}>
-            Uma aplicação moderna e intuitiva para explorar informações sobre países ao redor do mundo, 
-            desenvolvida com as mais recentes tecnologias web.
+            {t('heroDescription')}
           </p>
         </motion.div>
 
