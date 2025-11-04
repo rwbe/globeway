@@ -1,42 +1,31 @@
 {
-    "title": "🌍 About GlobeWay",
-    "description": "GlobeWay is an interactive platform that transforms the way you explore the world! 🚀 With it, you can search for any country on the planet and get detailed information, such as its flag, capital, population, spoken languages, currency, geographical region, and much more.",
-    "apiDescription": "Our system is powered by the <strong>REST Countries API</strong>, which provides real-time updated data. This means that with every search, <strong>GlobeWay</strong> directly accesses this global database to ensure accurate and reliable information.",
-    "searchTitle": "🔎 Intelligent Search and Real-Time Suggestions",
-    "searchDescription": "The search on <strong>GlobeWay</strong> is extremely fast and intuitive! As you start typing the name of a country in the search bar, the system automatically suggests the most relevant results. This <strong>autocomplete</strong> feature allows you to find the desired country with just a few clicks, without needing to type the full name.",
-    "searchFeatures": [
-      "✅ The search happens in real-time, connecting to the API to retrieve updated data.",
-      "✅ An intelligent algorithm filters and suggests the countries closest to your search.",
-      "✅ The intuitive interface ensures a smooth experience, without delays or long loading times."
-    ],
-    "detailsTitle": "🏳️ Complete Details About Each Country",
-    "detailsDescription": "When selecting a country, you will have access to a complete information panel, with a rich and organized visual presentation. The main data includes:",
-    "detailsFeatures": [
-      "📌 <strong>Flag and Coat of Arms</strong> – High-quality images to visually identify the country.",
-      "📌 <strong>Official Name and Common Name</strong> – Internationally recognized name and its popular version.",
-      "📌 <strong>Capital</strong> – Political and administrative center of the country.",
-      "📌 <strong>Population</strong> – Updated data on the number of inhabitants.",
-      "📌 <strong>Territorial Area</strong> – Size of the country in square kilometers.",
-      "📌 <strong>Continent</strong> – Global geographical classification.",
-      "📌 <strong>Time Zones</strong> – All applicable time zones for the country.",
-      "📌 <strong>Official Languages</strong> – List of the main spoken languages.",
-      "📌 <strong>Currency</strong> – Name and symbol of the official currency.",
-      "📌 <strong>Calling Code</strong> – International dialing code for the country.",
-      "📌 <strong>Internet Domain (TLD)</strong> – Extension used in the country's websites, such as .br for Brazil."
-    ],
-    "statsTitle": "📊 Advanced Statistics Section",
-    "statsDescription": "<strong>GlobeWay</strong> goes beyond just showing basic information! It also offers advanced statistics for a deeper understanding of each nation:",
-    "statsFeatures": [
-      "📌 <strong>Population Density</strong> – Automatic calculation of population per square kilometer.",
-      "📌 <strong>Simulated GDP per Capita</strong> – Estimate of economic power per capita.",
-      "📌 <strong>Enhanced Data Visualization</strong> – Modern layouts for better reading and comparison."
-    ],
-    "performanceTitle": "⚡ Performance and User Experience",
-    "performanceDescription": "<strong>GlobeWay</strong> was developed with a focus on speed and usability, using modern technologies to ensure smooth and uninterrupted navigation.",
-    "performanceFeatures": [
-      "✅ <strong>Search optimization and caching with React Query</strong> – Fast results and data reuse to avoid unnecessary reloads.",
-      "✅ <strong>Error handling mechanism</strong> – Ensures the user experience is not compromised if a country is not found.",
-      "✅ <strong>Modern typography and intuitive layout with Tailwind CSS</strong> – A visually appealing and comfortable design for reading.",
-      "✅ <strong>Lucide React icons for visual enhancement</strong> – More intuitive and pleasant interface."
-    ]
+    "features": {
+      "explore": {
+        "title": "Explore Countries",
+        "description": "Discover detailed information about all countries in the world with updated data."
+      },
+      "search": {
+        "title": "Intelligent Search",
+        "description": "Advanced search system with real-time suggestions and custom filters."
+      },
+      "voice": {
+        "title": "Voice Search",
+        "description": "Use voice commands to find countries quickly and intuitively."
+      },
+      "multilang": {
+        "title": "Multilingual",
+        "description": "Interface available in Portuguese, English, and Spanish with automatic translations."
+      },
+      "stats": {
+        "title": "Statistical Data",
+        "description": "View detailed statistics such as population, area, economy, and much more."
+      },
+      "responsive": {
+        "title": "Responsive Design",
+        "description": "Optimized experience for desktop, tablet, and mobile devices."
+      }
+    },
+    "heroTitle": "About <span class=\"text-gradient\">GlobeWay</span>",
+    "heroDescription": "A modern and intuitive application to explore information about countries around the world, developed with the latest web technologies.",
+    "techStack": "Technologies Used"
   }
