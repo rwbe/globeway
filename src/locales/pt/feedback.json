@@ -1,20 +1,20 @@
 {
-  "title": "💬 Deixe seu Feedback",
-  "description": "No <strong>GlobeWay</strong>, acreditamos que a melhor forma de evoluir é ouvindo você! 🎯 Seu feedback é essencial para continuarmos melhorando e tornando a plataforma ainda mais intuitiva e completa.",
+  "title": "Deixe seu Feedback",
+  "description": "No <strong>GlobeWay</strong>, acreditamos que a melhor forma de evoluir é ouvindo você! Seu feedback é essencial para continuarmos melhorando e tornando a plataforma ainda mais intuitiva e completa.",
   "shareOpinion": "Queremos saber sua opinião! Você pode compartilhar:",
-  "shareList": [
-    "🌟 O que você mais gostou no <strong>GlobeWay</strong>.",
-    "🚀 Sugestões de novas funcionalidades ou melhorias.",
-    "🐞 Erros ou falhas técnicas que encontrou.",
-    "💡 Qualquer outra ideia que possa tornar o <strong>GlobeWay</strong> ainda melhor!"
-  ],
-  "teamMessage": "Nossa equipe analisa cada feedback com atenção, e sempre buscamos implementar as melhores sugestões para proporcionar a melhor experiência possível.",
-  "shareYourOpinion": "Compartilhe sua opinião",
-  "shareYourOpinionDescription": "Deixe sua sugestão, crítica ou elogio no campo abaixo. Sua voz faz toda a diferença!",
-  "thankYouMessage": "✅ Obrigado pelo seu feedback! Estamos sempre trabalhando para melhorar o <strong>GlobeWay</strong>. 🚀",
-  "placeholder": "Digite sua mensagem aqui...",
-  "sendFeedback": "Enviar Feedback",
-  "finalMessage": "✨ Sua participação nos ajuda a tornar o <strong>GlobeWay</strong> a melhor plataforma de exploração de países! Obrigado por fazer parte dessa jornada. 🌍💙",
-  "connectWithUs": "📱 Conecte-se Conosco",
-  "connectWithUsDescription": "Tem alguma dúvida ou sugestão? Entre em contato conosco via GitHub ou e-mail, e responderemos o mais breve possível!"
+  "feedbackTypes": {
+    "bug": {
+      "title": "Reportar Bug",
+      "description": "Encontrou um problema?"
+    },
+    "feature": {
+      "title": "Sugerir Feature",
+      "description": "Tem uma ideia?"
+    },
+    "general": {
+      "title": "Feedback Geral",
+      "description": "Compartilhe sua opinião"
+    }
+  },
+  "experienceQuestion": "Como foi sua experiência?"
 }
