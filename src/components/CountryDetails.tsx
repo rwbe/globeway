@@ -17,6 +17,11 @@ import {
   FaChartLine,
   FaPercentage,
   FaGraduationCap,
+  FaShieldAlt,
+  FaFutbol,
+  FaEnvelope,
+  FaCheck,
+  FaTimes,
 } from 'react-icons/fa';
 import type { Country } from '../types/country';
 import { useTranslation } from 'react-i18next';
@@ -347,7 +352,90 @@ export const CountryDetails: React.FC<CountryDetailsProps> = ({ country, isDarkM
           </div>
         </motion.div>
 
-        {/* Additional sections will be added in next commits */}
+        {/* Additional Information Section */}
+        <motion.div
+          variants={cardVariants}
+          className="space-y-6"
+        >
+          <h2 className={`text-2xl font-light ${isDarkMode ? 'text-white' : 'text-neutral-900'}`}>
+            {t('additionalInfo')}
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <InfoCard
+              icon={<FaShieldAlt className="w-5 h-5" />}
+              label={t('independent')}
+              value={displayCountry.independent ? (
+                <div className="flex items-center space-x-2">
+                  <FaCheck className="w-4 h-4 text-green-500" />
+                  <span>{t('yes')}</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <FaTimes className="w-4 h-4 text-red-500" />
+                  <span>{t('no')}</span>
+                </div>
+              )}
+              isDarkMode={isDarkMode}
+            />
+            <InfoCard
+              icon={<FaGlobe className="w-5 h-5" />}
+              label={t('unMember')}
+              value={displayCountry.unMember ? (
+                <div className="flex items-center space-x-2">
+                  <FaCheck className="w-4 h-4 text-green-500" />
+                  <span>{t('yes')}</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <FaTimes className="w-4 h-4 text-red-500" />
+                  <span>{t('no')}</span>
+                </div>
+              )}
+              isDarkMode={isDarkMode}
+            />
+            {displayCountry.fifa && (
+              <InfoCard
+                icon={<FaFutbol className="w-5 h-5" />}
+                label={t('fifa')}
+                value={displayCountry.fifa}
+                isDarkMode={isDarkMode}
+              />
+            )}
+            {displayCountry.postalCode?.format && (
+              <InfoCard
+                icon={<FaEnvelope className="w-5 h-5" />}
+                label={t('postalCode')}
+                value={displayCountry.postalCode.format}
+                isDarkMode={isDarkMode}
+              />
+            )}
+          </div>
+        </motion.div>
+
+        {/* Coat of Arms Section - Only show if available */}
+        {displayCountry.coatOfArms?.svg && (
+          <motion.div
+            variants={cardVariants}
+            className={`flex flex-col items-center space-y-6 py-12 rounded-2xl ${
+              isDarkMode ? 'bg-neutral-900' : 'bg-white'
+            } shadow-sm`}
+          >
+            <h2 className={`text-2xl font-light ${isDarkMode ? 'text-white' : 'text-neutral-900'}`}>
+              {t('coatOfArms')}
+            </h2>
+            <motion.img
+              src={displayCountry.coatOfArms.svg}
+              alt={`Coat of Arms of ${displayCountry.name?.common}`}
+              className="w-32 h-32 object-contain"
+              whileHover={{ scale: 1.05 }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+            />
+          </motion.div>
+        )}
       </div>
     </motion.div>
   );
