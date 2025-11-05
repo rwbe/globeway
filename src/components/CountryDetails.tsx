@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
+  FaBuilding,
   FaArrowLeft,
 } from 'react-icons/fa';
 import type { Country } from '../types/country';
@@ -109,8 +110,76 @@ export const CountryDetails: React.FC<CountryDetailsProps> = ({ country, isDarkM
       </div>
 
       {/* Main content container */}
-      <div className="max-w-6xl mx-auto px-6 pt-32 pb-12">
-        {/* Content sections will be added in subsequent commits */}
+      <div className="max-w-6xl mx-auto px-6 pt-32 pb-12 space-y-12">
+        {/* Hero Section with Large Flag Display */}
+        <motion.div
+          variants={cardVariants}
+          className="text-center space-y-8"
+        >
+          {/* Large Flag Display with Elegant Styling */}
+          {displayCountry.flags?.svg && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center"
+            >
+              <div className={`relative rounded-3xl overflow-hidden shadow-2xl ${
+                isDarkMode ? 'ring-4 ring-neutral-800/50' : 'ring-4 ring-neutral-200/50'
+              }`}
+                style={{ maxWidth: '400px', width: '100%' }}
+              >
+                <img 
+                  src={displayCountry.flags.svg} 
+                  alt={`Flag of ${displayCountry.name?.common}`}
+                  className="w-full h-auto object-cover"
+                  style={{ aspectRatio: '3/2' }}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Country Names Section */}
+          <div className="space-y-3">
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className={`text-5xl md:text-6xl font-light tracking-tight ${
+                isDarkMode ? 'text-white' : 'text-neutral-900'
+              }`}
+            >
+              {getTranslatedName(displayCountry.cca3 || '', 'common')}
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className={`text-xl font-light ${
+                isDarkMode ? 'text-neutral-400' : 'text-neutral-600'
+              }`}
+            >
+              {getTranslatedName(displayCountry.cca3 || '', 'official')}
+            </motion.p>
+          </div>
+          
+          {/* Capital City Badge */}
+          {displayCountry.capital?.[0] && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+              className={`inline-flex items-center space-x-2 px-6 py-3 rounded-full ${
+                isDarkMode ? 'bg-neutral-900 text-neutral-300' : 'bg-neutral-100 text-neutral-700'
+              }`}
+            >
+              <FaBuilding className="w-4 h-4" />
+              <span className="font-medium">{displayCountry.capital[0]}</span>
+            </motion.div>
+          )}
+        </motion.div>
+
+        {/* Additional sections will be added in next commits */}
       </div>
     </motion.div>
   );
