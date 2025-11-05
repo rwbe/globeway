@@ -1,8 +1,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
+  FaUsers,
+  FaMapMarkerAlt,
+  FaClock,
+  FaPhone,
+  FaDollarSign,
+  FaLanguage,
+  FaMountain,
   FaBuilding,
+  FaGlobe,
+  FaHashtag,
   FaArrowLeft,
+  FaMap,
 } from 'react-icons/fa';
 import type { Country } from '../types/country';
 import { useTranslation } from 'react-i18next';
@@ -177,6 +187,87 @@ export const CountryDetails: React.FC<CountryDetailsProps> = ({ country, isDarkM
               <span className="font-medium">{displayCountry.capital[0]}</span>
             </motion.div>
           )}
+        </motion.div>
+
+        {/* Core Statistics Cards */}
+        <motion.div
+          variants={cardVariants}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          <StatCard
+            icon={<FaUsers className="w-6 h-6" />}
+            label={t('population')}
+            value={formatNumber(displayCountry.population)}
+            isDarkMode={isDarkMode}
+          />
+          <StatCard
+            icon={<FaMountain className="w-6 h-6" />}
+            label={t('area')}
+            value={displayCountry.area ? `${formatNumber(displayCountry.area)} km²` : t('notAvailable')}
+            isDarkMode={isDarkMode}
+          />
+          <StatCard
+            icon={<FaHashtag className="w-6 h-6" />}
+            label={t('populationDensity')}
+            value={populationDensity ? `${populationDensity} /km²` : t('notAvailable')}
+            isDarkMode={isDarkMode}
+          />
+        </motion.div>
+
+        {/* Basic Country Information Grid */}
+        <motion.div
+          variants={cardVariants}
+          className="space-y-6"
+        >
+          <h2 className={`text-2xl font-light ${isDarkMode ? 'text-white' : 'text-neutral-900'}`}>
+            {t('countryInformation')}
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <InfoCard
+              icon={<FaMapMarkerAlt className="w-5 h-5" />}
+              label={t('continent')}
+              value={displayCountry.continents?.join(', ') || t('notAvailable')}
+              isDarkMode={isDarkMode}
+            />
+            <InfoCard
+              icon={<FaMap className="w-5 h-5" />}
+              label={t('region')}
+              value={displayCountry.region || t('notAvailable')}
+              isDarkMode={isDarkMode}
+            />
+            <InfoCard
+              icon={<FaLanguage className="w-5 h-5" />}
+              label={t('languages')}
+              value={displayCountry.languages ? Object.values(displayCountry.languages).join(', ') : t('notAvailable')}
+              isDarkMode={isDarkMode}
+            />
+            <InfoCard
+              icon={<FaDollarSign className="w-5 h-5" />}
+              label={t('currencies')}
+              value={displayCountry.currencies ? 
+                Object.values(displayCountry.currencies).map(c => `${c.name} (${c.symbol || 'N/A'})`).join(', ') : t('notAvailable')}
+              isDarkMode={isDarkMode}
+            />
+            <InfoCard
+              icon={<FaClock className="w-5 h-5" />}
+              label={t('timeZones')}
+              value={displayCountry.timezones?.slice(0, 3).join(', ') || t('notAvailable')}
+              isDarkMode={isDarkMode}
+            />
+            <InfoCard
+              icon={<FaPhone className="w-5 h-5" />}
+              label={t('callingCode')}
+              value={displayCountry.idd ? `${displayCountry.idd.root}${displayCountry.idd.suffixes?.[0] || ''}` : t('notAvailable')}
+              isDarkMode={isDarkMode}
+            />
+            <InfoCard
+              icon={<FaGlobe className="w-5 h-5" />}
+              label={t('domain')}
+              value={displayCountry.tld?.[0] || t('notAvailable')}
+              isDarkMode={isDarkMode}
+            />
+          </div>
         </motion.div>
 
         {/* Additional sections will be added in next commits */}
