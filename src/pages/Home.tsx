@@ -389,22 +389,19 @@ function Home({ isDarkMode }: HomeProps) {
     <div className="min-h-screen non-selectable">
       <main className="max-w-7xl mx-auto px-6 py-12 space-y-16">
         
-        {/* HERO SECTION MODERNA */}
+       {/* HERO SECTION MODERNA */}
         {!searchQuery && !selectedCountry && (
           <>
             <div className="relative overflow-hidden rounded-3xl">
               {/* Background com Gradiente e Elementos Gráficos Modernos */}
-              <div className="absolute inset-0 -z-10">
-                <div className={`absolute inset-0 ${
-                  isDarkMode 
-                    ? 'bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950' 
-                    : 'bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30'
+              <div className="absolute inset-0 z-0">
+                <div className={`absolute inset-0 z-0 {
                 }`} />
-                
+
                 <motion.div
                   initial={{ opacity: 0, scale: 1.1 }}
                   animate={{ 
-                    opacity: isDarkMode ? 0.15 : 0.22, 
+                    opacity: isDarkMode ? 0.15 : 0.13, 
                     scale: 1,
                     x: [0, 10, 0]
                   }}
@@ -417,13 +414,12 @@ function Home({ isDarkMode }: HomeProps) {
                       ease: "easeInOut"
                     }
                   }}
-                  className="absolute inset-0 w-full h-full pointer-events-none"
+                  className="absolute inset-0 w-full h-full pointer-events-none z-0"
                   style={{
-                    backgroundImage: 'url(/Abstract_dotted_world_map_905c1347.png)',
+                    backgroundImage: 'url(/mundi-light.png)',
                     backgroundSize: 'cover',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center center',
-                    filter: isDarkMode ? 'brightness(0.7) saturate(0.8)' : 'brightness(1.1) saturate(1.2)'
                   }}
                 />
                 
@@ -441,23 +437,6 @@ function Home({ isDarkMode }: HomeProps) {
                     isDarkMode 
                       ? 'bg-blue-600/10' 
                       : 'bg-blue-400/20'
-                  }`} 
-                />
-                <motion.div 
-                  animate={{ 
-                    scale: [1, 1.3, 1],
-                    opacity: [0.1, 0.2, 0.1]
-                  }}
-                  transition={{ 
-                    duration: 10,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 2
-                  }}
-                  className={`absolute bottom-1/4 right-1/5 w-[500px] h-[500px] rounded-full blur-3xl ${
-                    isDarkMode 
-                      ? 'bg-purple-600/8' 
-                      : 'bg-purple-400/15'
                   }`} 
                 />
               </div>
