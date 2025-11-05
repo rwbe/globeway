@@ -8,11 +8,15 @@ import {
   FaDollarSign,
   FaLanguage,
   FaMountain,
+  FaMoneyBillAlt,
   FaBuilding,
   FaGlobe,
   FaHashtag,
   FaArrowLeft,
   FaMap,
+  FaChartLine,
+  FaPercentage,
+  FaGraduationCap,
 } from 'react-icons/fa';
 import type { Country } from '../types/country';
 import { useTranslation } from 'react-i18next';
@@ -213,6 +217,79 @@ export const CountryDetails: React.FC<CountryDetailsProps> = ({ country, isDarkM
             isDarkMode={isDarkMode}
           />
         </motion.div>
+
+        {/* Economic Data Section - Only show if available */}
+        {(displayCountry.gdp || displayCountry.economics || displayCountry.demographics) && (
+          <motion.div
+            variants={cardVariants}
+            className="space-y-6"
+          >
+            <h2 className={`text-2xl font-light ${isDarkMode ? 'text-white' : 'text-neutral-900'}`}>
+              {t('economicData')}
+            </h2>
+            
+            {/* Loading state for economic data */}
+            {isLoadingEconomic && (
+              <div className="flex items-center justify-center py-8">
+                <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${
+                  isDarkMode ? 'border-white' : 'border-neutral-900'
+                }`}></div>
+              </div>
+            )}
+            
+            {/* Economic Data Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {displayCountry.gdp?.total && (
+                <StatCard
+                  icon={<FaChartLine className="w-5 h-5" />}
+                  label={t('gdpTotal')}
+                  value={formatNumber(displayCountry.gdp.total, 'currency')}
+                  isDarkMode={isDarkMode}
+                />
+              )}
+              {displayCountry.gdp?.perCapita && (
+                <StatCard
+                  icon={<FaMoneyBillAlt className="w-5 h-5" />}
+                  label={t('gdpPerCapita')}
+                  value={formatNumber(displayCountry.gdp.perCapita, 'currency')}
+                  isDarkMode={isDarkMode}
+                />
+              )}
+              {displayCountry.gdp?.growthRate && (
+                <StatCard
+                  icon={<FaPercentage className="w-5 h-5" />}
+                  label={t('gdpGrowth')}
+                  value={formatPercentage(displayCountry.gdp.growthRate)}
+                  isDarkMode={isDarkMode}
+                />
+              )}
+              {displayCountry.economics?.inflationRate && (
+                <StatCard
+                  icon={<FaPercentage className="w-5 h-5" />}
+                  label={t('inflationRate')}
+                  value={formatPercentage(displayCountry.economics.inflationRate)}
+                  isDarkMode={isDarkMode}
+                />
+              )}
+              {displayCountry.economics?.unemploymentRate && (
+                <StatCard
+                  icon={<FaPercentage className="w-5 h-5" />}
+                  label={t('unemploymentRate')}
+                  value={formatPercentage(displayCountry.economics.unemploymentRate)}
+                  isDarkMode={isDarkMode}
+                />
+              )}
+              {displayCountry.demographics?.lifeExpectancy && (
+                <StatCard
+                  icon={<FaGraduationCap className="w-5 h-5" />}
+                  label={t('lifeExpectancy')}
+                  value={`${displayCountry.demographics.lifeExpectancy.toFixed(1)} anos`}
+                  isDarkMode={isDarkMode}
+                />
+              )}
+            </div>
+          </motion.div>
+        )}
 
         {/* Basic Country Information Grid */}
         <motion.div
