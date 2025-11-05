@@ -393,7 +393,6 @@ function Home({ isDarkMode }: HomeProps) {
         {!searchQuery && !selectedCountry && (
           <>
             <div className="relative overflow-hidden rounded-3xl">
-              {/* Background com Gradiente e Elementos Gráficos Modernos */}
               <div className="absolute inset-0 z-0">
                 <div className={`absolute inset-0 z-0 {
                 }`} />
@@ -421,23 +420,6 @@ function Home({ isDarkMode }: HomeProps) {
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center center',
                   }}
-                />
-                
-                <motion.div 
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    opacity: [0.15, 0.25, 0.15]
-                  }}
-                  transition={{ 
-                    duration: 8,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                  className={`absolute top-1/4 left-1/5 w-[500px] h-[500px] rounded-full blur-3xl ${
-                    isDarkMode 
-                      ? 'bg-blue-600/10' 
-                      : 'bg-blue-400/20'
-                  }`} 
                 />
               </div>
 
