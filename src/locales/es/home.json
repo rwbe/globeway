@@ -1,0 +1,62 @@
+{
+  "title": "Explora el mundo al alcance de tus dedos",
+  "description": "Descubre países haciendo clic en una bandera o busca uno por nombre.",
+  "adventure": "¡Tu próxima aventura está a solo un clic o búsqueda de distancia!",
+  "allRegions": "Todas las Regiones",
+  "continents": "Continentes",
+  "instantSearch": "Búsqueda Instantánea",
+  "regions": {
+    "africa": "África",
+    "americas": "Américas",
+    "asia": "Asia",
+    "europe": "Europa",
+    "oceania": "Oceanía",
+    "antarctic": "Antártida"
+  },
+  "maxPopulation": "Población Máxima",
+  "domainPlaceholder": "Dominio (ej: .es)",
+  "languagePlaceholder": "Filtrar por idioma",
+  "allSizes": "Todos los tamaños",
+  "populationSizes": {
+    "small": "Pequeño (< 1M)",
+    "medium": "Mediano (1M - 50M)",
+    "large": "Grande (> 50M)"
+  },
+  "clearFilters": "Limpiar Filtros",
+  "showing": "Mostrando",
+  "of": "de",
+  "countries": "países",
+  "filteredByRegion": "Filtrado por región",
+  "filteredByPopulation": "Filtrado por población",
+  "filteredByDomain": "Filtrado por dominio",
+  "filteredByLanguage": "Filtrado por idioma",
+  "filteredBySize": "Filtrado por tamaño",
+  "loadingCountries": "Cargando países...",
+  "noCountryFound": "No se encontró ningún país con ese nombre.",
+  "searchPlaceholder": "Escribe el nombre de un país...",
+  "goBack": "Volver al inicio",
+  "exploreCountriesBelow": "Explora países abajo",
+  "countriesFound": {
+    "singular": "país encontrado",
+    "plural": "países encontrados"
+  },
+  "listening": "Escuchando...",
+  "startVoiceSearch": "Haz clic para buscar por voz",
+  "stopVoiceSearch": "Detener búsqueda por voz",
+  "tryAnotherSearch": "Intenta buscar otro país o usa los filtros a continuación",
+  "clearSearch": "Limpiar Búsqueda",
+  "capital": "Capital",
+  "population": "Población",
+  "region": "Región",
+  "area": "Área",
+  "countriesInfo": {
+    "title": "¿Por qué 250 países/territorios?",
+    "explanation": "La API REST Countries incluye no solo los 195 países soberanos reconocidos por la ONU, sino también territorios dependientes, regiones autónomas y áreas especiales.",
+    "examples": "Ejemplos: Groenlandia (territorio de Dinamarca), Puerto Rico (territorio de EE.UU.), Hong Kong, Antártida, entre otros.",
+    "filterOption": "Usa el filtro a continuación para ver solo países independientes."
+  },
+  "showOnlyIndependent": "Mostrar solo países independientes",
+  "showAllTerritories": "Mostrar todos (incluidos territorios)",
+  "independentCountries": "países independientes",
+  "allTerritories": "países y territorios"
+}

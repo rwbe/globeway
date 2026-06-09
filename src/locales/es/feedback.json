@@ -1,0 +1,20 @@
+{
+  "title": "Deja tu Comentario",
+  "description": "En <strong>GlobeWay</strong>, creemos que la mejor forma de mejorar es escuchándote! Tu opinión es esencial para que sigamos mejorando y haciendo la plataforma aún más intuitiva y completa.",
+  "feedbackTypes": {
+    "bug": {
+      "title": "Reportar Bug",
+      "description": "¿Encontraste un problema?"
+    },
+    "feature": {
+      "title": "Sugerir Funcionalidad",
+      "description": "¿Tienes una idea?"
+    },
+    "general": {
+      "title": "Comentario General",
+      "description": "Comparte tu opinión"
+    }
+  },
+  "experienceQuestion": "¿Cómo fue tu experiencia?",
+  "submit": "Enviar"
+}

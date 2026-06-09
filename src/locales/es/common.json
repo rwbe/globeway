@@ -1,0 +1,9 @@
+{
+  "loading": "Cargando...",
+  "error": "Error",
+  "retry": "Reintentar",
+  "close": "Cerrar",
+  "search": "Buscar",
+  "filter": "Filtrar",
+  "reset": "Restablecer"
+}

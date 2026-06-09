@@ -1,0 +1,40 @@
+{
+  "countryDetails": {
+    "capital": "Capital",
+    "region": "Región",
+    "subregion": "Subregión",
+    "population": "Población",
+    "area": "Área",
+    "languages": "Idiomas",
+    "currencies": "Monedas",
+    "notAvailable": "N/D"
+  },
+  "regions": {
+    "africa": "África",
+    "americas": "Américas",
+    "asia": "Asia",
+    "europe": "Europa",
+    "oceania": "Oceanía",
+    "antarctic": "Antártida"
+  },
+  "subregions": {
+    "south_america": "América del Sur",
+    "northern_europe": "Europa del Norte",
+    "western_europe": "Europa Occidental",
+    "southern_europe": "Europa del Sur",
+    "eastern_europe": "Europa Oriental",
+    "central_asia": "Asia Central",
+    "western_asia": "Asia Occidental",
+    "southern_asia": "Asia del Sur",
+    "southeast_asia": "Sudeste Asiático",
+    "eastern_asia": "Asia Oriental"
+  },
+  "languages": {
+    "portuguese": "Portugués",
+    "english": "Inglés",
+    "spanish": "Español",
+    "french": "Francés",
+    "german": "Alemán",
+    "swedish": "Sueco"
+  }
+}

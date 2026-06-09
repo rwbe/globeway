@@ -1,0 +1,20 @@
+{
+  "description": "Descubre países, explora datos detallados y sumérgete en la diversidad global con GlobeWay",
+  "quickLinks": "Enlaces Rápidos",
+  "home": "Inicio",
+  "about": "Acerca de",
+  "feedback": "Comentarios",
+  "technologies": "Tecnologías",
+  "madeWith": "Hecho con",
+  "by": "por",
+  "apiSource": "Fuente de datos: REST Countries API",
+  "stats": {
+    "countries": "195+",
+    "activeUsers": "25K+",
+    "uptime": "99.9%",
+    "secure": "100%"
+  },
+  "countries": "Países",
+  "uptime": "Tiempo de Actividad",
+  "secure": "Seguro"
+}
