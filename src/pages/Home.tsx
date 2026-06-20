@@ -1,16 +1,15 @@
-// Home.tsx
-import { useState, useEffect } from 'react';
-import { useQuery } from 'react-query';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { SearchBar } from '../components/SearchBar';
-import { CountryDetails } from '../components/CountryDetails';
-import type { Country } from '../types/country';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FaExclamationTriangle, FaGlobe, FaMapMarkerAlt, FaUsers } from 'react-icons/fa';
+import { useQuery } from 'react-query';
+import { CountryDetails } from '../components/CountryDetails';
+import { SearchBar } from '../components/SearchBar';
 import Tooltip from '../components/Tooltip';
-import { useTranslatedCountryNames } from '../utils/translateCountryNames';
 import { useBulkEconomicData } from '../hooks/useEnhancedCountryData';
-import { FaGlobe, FaUsers, FaMapMarkerAlt, FaExclamationTriangle } from 'react-icons/fa';
+import type { Country } from '../types/country';
+import { useTranslatedCountryNames } from '../utils/translateCountryNames';
 
 // Interfaces para os tipos GraphQL
 interface GraphQLCountry {
